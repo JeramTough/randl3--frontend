@@ -80,16 +80,26 @@
                         add tab
                     </el-button>
                 </div>
-                <el-tabs v-model="editableTabsValue" type="card" closable @tab-remove="removeTab">
+                <el-tabs v-model="editableTabsValue" type="card" closable @tab-remove="removeTab"
+                         @tab-click="onTabSelected">
                     <el-tab-pane
                             v-for="(item, index) in editableTabs"
                             :key="item.name"
                             :label="item.title+index"
-                            :name="item.name"
-                    >
-                        {{item.content}}
+                            :name="item.name">
+
+                        <router-view :name="item.content"></router-view>
+                        
                     </el-tab-pane>
+
+
                 </el-tabs>
+
+                <div>
+                    {{editableTabsValue}}
+                    <router-view></router-view>
+                </div>
+
             </el-main>
             <!--朱布局End-->
 
@@ -129,11 +139,11 @@
                 editableTabs: [{
                     title: 'Tab 1',
                     name: '1',
-                    content: 'Tab 1 content'
+                    content: 'home_view'
                 }, {
                     title: 'Tab 2',
                     name: '2',
-                    content: 'Tab 2 content'
+                    content: 'admin_user_view'
                 }],
                 tabIndex: 2
             }
@@ -144,6 +154,9 @@
                 console.info(index + "===" + indexPath)
             }
             ,
+            onTabSelected(tab) {
+                console.info(tab);
+            },
             // eslint-disable-next-line no-unused-vars
             addTab(targetName) {
                 let newTabName = ++this.tabIndex + '';
