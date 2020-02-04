@@ -3,14 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --port 8089npm install sass-loader --open",
+    "serve": "vue-cli-service serve --port 8089 --open",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "core-js": "^3.4.4",
     "element-ui": "^2.13.0",
-    "less": "^3.10.3",
     "less-loader": "^5.0.0",
     "vue": "^2.6.10",
     "vue-router": "^3.1.5"
@@ -33,9 +32,13 @@
       "plugin:vue/essential",
       "eslint:recommended"
     ],
-    "rules": {},
     "parserOptions": {
       "parser": "babel-eslint"
+    },
+    "rules": {
+      "no-console": "off",
+      "no-unused-vars": "off",
+      "no-unused-components": "off"
     }
   },
   "browserslist": [

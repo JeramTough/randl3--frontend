@@ -5,7 +5,7 @@ Vue.use(VueRouter);
 const routePaths = [
     {
         path: "/",
-        component: ()=>import(/* webpackChunkName: "about" */ '@/views/HomeView.vue')
+        component: ()=>import(/* webpackChunkName: "about" */ '@/views/FrameView.vue')
     },
     {
         path: "/test",

@@ -1,35 +1,31 @@
 <template>
     <el-container>
         <!--侧边菜单Start-->
-        <el-menu default-active="1-4-1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"
+        <el-menu default-active="home" class="el-menu-vertical-demo"
+                 @select="onMenuSelected"
                  :collapse="isCollapse"
                  background-color="#6fa55c"
                  text-color="#fff"
                  active-text-color="#ffd04b">
 
-            <div style="background: #168825">sdfs</div>
+            <div style="background: #168825">
+                <el-image
+                        fit="fill" :src="logoUrl"></el-image>
+            </div>
 
-            <el-menu-item index="1">
+            <el-menu-item index="home">
                 <i class="el-icon-s-home menu-icon"></i>
-                <span slot="title">首页</span>
+                <span slot="title" class="menu-title">首页</span>
             </el-menu-item>
             <el-submenu index="2">
                 <template slot="title">
                     <i class="el-icon-s-custom menu-icon"></i>
-                    <span slot="title">用户管理</span>
+                    <span slot="title" class="menu-title">用户管理</span>
                 </template>
                 <el-menu-item-group>
-                    <span slot="title">分组一</span>
-                    <el-menu-item index="1-1">选项1</el-menu-item>
-                    <el-menu-item index="1-2">选项2</el-menu-item>
+                    <el-menu-item index="admin-user-management">管理员账户管理</el-menu-item>
+                    <el-menu-item index="registered-user-management">普通用户管理</el-menu-item>
                 </el-menu-item-group>
-                <el-menu-item-group title="分组2">
-                    <el-menu-item index="1-3">选项3</el-menu-item>
-                </el-menu-item-group>
-                <el-submenu index="1-4">
-                    <span slot="title">选项4</span>
-                    <el-menu-item index="1-4-1">选项1</el-menu-item>
-                </el-submenu>
             </el-submenu>
         </el-menu>
         <!--侧边菜单End-->
@@ -80,8 +76,7 @@
                 <div style="margin-bottom: 20px;">
                     <el-button
                             size="small"
-                            @click="addTab(editableTabsValue)"
-                    >
+                            @click="addTab(editableTabsValue)">
                         add tab
                     </el-button>
                 </div>
@@ -103,6 +98,15 @@
 </template>
 
 <style scoped>
+    .el-menu {
+        text-align: left;
+        font-weight: bolder;
+    }
+
+    .menu-title {
+        font-size: larger;
+    }
+
     .el-menu-vertical-demo:not(.el-menu--collapse) {
         width: 200px;
         min-height: 400px;
@@ -112,8 +116,6 @@
         color: #ffffff;
         font-weight: bold;
     }
-
-
 </style>
 
 <script>
@@ -121,6 +123,7 @@
         name: "MainView",
         data() {
             return {
+                logoUrl: require('../assets/images/logo.png'),
                 isCollapse: false,
                 editableTabsValue: '2',
                 editableTabs: [{
@@ -137,14 +140,10 @@
         }
         ,
         methods: {
-            handleOpen(key, keyPath) {
-                // eslint-disable-next-line no-console
-                console.log(key, keyPath);
-            },
-            handleClose(key, keyPath) {
-                // eslint-disable-next-line no-console
-                console.log(key, keyPath);
-            },
+            onMenuSelected(index, indexPath) {
+                console.info(index + "===" + indexPath)
+            }
+            ,
             // eslint-disable-next-line no-unused-vars
             addTab(targetName) {
                 let newTabName = ++this.tabIndex + '';
@@ -154,7 +153,8 @@
                     content: 'New Tab content'
                 });
                 this.editableTabsValue = newTabName;
-            },
+            }
+            ,
             removeTab(targetName) {
                 let tabs = this.editableTabs;
                 let activeName = this.editableTabsValue;
@@ -173,5 +173,6 @@
                 this.editableTabs = tabs.filter(tab => tab.name !== targetName);
             }
         }
-    };
+    }
+    ;
 </script>
