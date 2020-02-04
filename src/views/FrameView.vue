@@ -1,7 +1,7 @@
 <template>
     <el-container>
         <!--侧边菜单Start-->
-        <el-menu default-active="1" class="el-menu-vertical-demo"
+        <el-menu default-active="0" class="el-menu-vertical-demo"
                  @select="onMenuSelected"
                  :collapse="isCollapse"
                  background-color="#6fa55c"
@@ -13,18 +13,18 @@
                         fit="fill" :src="logoUrl"></el-image>
             </div>
 
-            <el-menu-item index="1">
+            <el-menu-item index="0">
                 <i class="el-icon-s-home menu-icon"></i>
-                <span slot="title" class="menu-title">首页</span>
+                <span slot="title" class="menu-title">主页</span>
             </el-menu-item>
-            <el-submenu index="2">
+            <el-submenu index="1">
                 <template slot="title">
                     <i class="el-icon-s-custom menu-icon"></i>
                     <span slot="title" class="menu-title">用户管理</span>
                 </template>
                 <el-menu-item-group>
-                    <el-menu-item index="2-1">管理员账户管理</el-menu-item>
-                    <el-menu-item index="2-2">普通用户管理</el-menu-item>
+                    <el-menu-item index="1-0">管理员账户管理</el-menu-item>
+                    <el-menu-item index="1-1">普通用户管理</el-menu-item>
                 </el-menu-item-group>
             </el-submenu>
         </el-menu>
@@ -32,9 +32,11 @@
 
         <el-container>
             <!--头布局-->
-            <el-header style="padding: 0;margin: 0;background: #b6ffab;color: #ffffff;">
+            <el-header style="padding: 0;margin: 0;background: #b6ffab;color: #ffffff;height: auto;">
 
                 <div style="padding-top: 10px;">
+                    <!--active-icon-class="el-icon-s-fold"
+                    inactive-icon-class="el-icon-s-unfold"-->
                     <el-switch
                             v-model="isCollapse"
                             active-color="#13ce66"
@@ -43,14 +45,12 @@
                     </el-switch>
 
 
-                    <el-breadcrumb separator="/" style="float: left;color: white;">
-                        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-                        <el-breadcrumb-item><a href="/">活动管理</a></el-breadcrumb-item>
-                        <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-                        <el-breadcrumb-item>
-                            <div>王小虎</div>
-                        </el-breadcrumb-item>
-                    </el-breadcrumb>
+                    <div style="float: left;color: #000000;font-size: small;margin-left: 3px;margin-right: 3px;">
+
+                        <span v-for="item in menuDataQueue" v-bind:key="item.index">
+                            /&nbsp;{{ item.title }}
+                        </span>
+                    </div>
 
 
                     <div style="float: right; text-align: start">
@@ -77,9 +77,9 @@
                          @tab-click="onTabSelected">
                     <el-tab-pane
                             v-for="(item, index) in tabViewDataList"
-                            :key="item.name"
+                            :key="item.viewName"
                             :label="item.title"
-                            :name="item.name">
+                            :name="item.viewName">
 
                         <router-view :name="item.viewName"></router-view>
 
@@ -123,20 +123,21 @@
             return {
                 logoUrl: require('../assets/images/logo.png'),
                 isCollapse: false,
-                currentTabName: '2',
+                currentTabName: null,
                 tabViewDataList: [],
-                tabIndex: 2
+                menuDataQueue: []
             }
         }
         ,
         mounted: function () {
             //默认第一个菜单被选中
-            this.onMenuSelected("1",1);
+            this.onMenuSelected("0", 1);
         }
         ,
         methods: {
             onMenuSelected(index, indexPath) {
-                let menuData = this.menuIndexMap.get(index);
+                this.menuDataQueue = this.getMenuDataQueue(index);
+                let menuData = this.menuDataQueue[this.menuDataQueue.length - 1];
                 let isAddable = true;
                 this.tabViewDataList.forEach(tabViewData => {
                     if (tabViewData.viewName === menuData.viewName) {
@@ -151,14 +152,11 @@
             }
             ,
             onTabSelected(tab) {
-                console.info(tab);
+                let menuData = this.tabViewDataList[tab.index];
+                this.menuDataQueue = this.getMenuDataQueue(menuData.index);
             },
             addTabView(menuData) {
-                this.tabViewDataList.push({
-                    title: menuData.title,
-                    name: menuData.viewName,
-                    viewName: menuData.viewName
-                });
+                this.tabViewDataList.push(menuData);
                 this.currentTabName = menuData.viewName;
             },
             removeTab(targetName) {
@@ -166,27 +164,45 @@
                 let activeName = this.currentTabName;
                 if (activeName === targetName) {
                     tabs.forEach((tab, index) => {
-                        if (tab.name === targetName) {
+                        if (tab.viewName === targetName) {
                             let nextTab = tabs[index + 1] || tabs[index - 1];
                             if (nextTab) {
-                                activeName = nextTab.name;
+                                activeName = nextTab.viewName;
                             }
                         }
                     });
                 }
 
                 this.currentTabName = activeName;
-                this.tabViewDataList = tabs.filter(tab => tab.name !== targetName);
+                this.tabViewDataList = tabs.filter(tab => tab.viewName !== targetName);
+            }
+            ,
+            getMenuDataQueue: function (index) {
+                let indexs = index.split("-");
+                let menuDataQueue = [];
+                let menuTree = this.menuTree;
+                indexs.forEach((value) => {
+                    let menuData = menuTree[Number(value)];
+                    menuDataQueue.push(menuData);
+                    menuTree = menuData.children;
+                });
+
+                return menuDataQueue;
             }
         }
         ,
         computed: {
-            menuIndexMap() {
-                var menuIndexMap = new Map();
-                menuIndexMap.set("1", {viewName: "home_view", title: "主页"});
-                menuIndexMap.set("2-1", {viewName: "admin_user_view", title: "管理员账号管理"});
-                menuIndexMap.set("2-2", {viewName: "registered_user_view", title: "普通用户管理"});
-                return menuIndexMap;
+            menuTree() {
+                return [
+                    {index: "0", viewName: "home_view", title: "主页", children: null},
+                    {
+                        index: "1", viewName: null, title: "用户管理", children:
+                            [
+                                {index: "1-0", viewName: "admin_user_view", title: "管理员账户管理", children: null},
+                                {index: "1-1", viewName: "registered_user_view", title: "普通用户管理", children: null}
+                            ]
+                    }
+                ];
             }
         }
     }
