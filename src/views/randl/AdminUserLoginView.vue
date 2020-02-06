@@ -31,8 +31,10 @@
                 </div>
 
             </div>
+
+
             <div class="signin" @click="doLogin">
-                <input type="submit" value="登录">
+                <input type="submit" :value="loginStatus">
             </div>
         </div>
         <div class="copy-rights">
@@ -57,27 +59,40 @@
                 userCredentials: {
                     username: null,
                     password: null,
-                }
+                },
+                isLogining: false
             }
         },
         methods: {
             doLogin() {
-                let Vue=this;
-                apiHandler.getAdminUserApi().login(this.userCredentials, function (data) {
-                   if (data.isSuccessful){
-                       Vue.$message({
-                           message: data.responseBody,
-                           type: 'success'
-                       });
-                       Vue.$router.push({ path: '/Layout' });
-                   }
-                   else{
-                       Vue.$message({
-                           message: data.responseBody,
-                           type: 'error'
-                       });
-                   }
-                });
+                let Vue = this;
+
+                if (!this.isLogining) {
+                    apiHandler.getAdminUserApi().login(this.userCredentials, function (data) {
+                        if (data.isSuccessful) {
+                            Vue.$message({
+                                message: data.responseBody,
+                                type: 'success'
+                            });
+                            Vue.$router.push({path: '/Layout'});
+                        } else {
+                            Vue.$message({
+                                message: data.responseBody,
+                                type: 'error'
+                            });
+                        }
+
+                        Vue._data.isLogining = false;
+                    });
+                }
+
+                this.isLogining = true;
+
+            }
+        },
+        computed: {
+            loginStatus: function () {
+                return this.isLogining ? "登录中...." : "登录";
             }
         }
     }

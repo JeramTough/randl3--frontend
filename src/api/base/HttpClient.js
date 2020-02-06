@@ -33,7 +33,7 @@ function HttpClient(baseUrl) {
 
             handleError: function (error, caller) {
                 console.error(error);
-                caller({isSuccessful: false});
+                caller({isSuccessful: false, responseBody: error.message});
             }
         },
 
@@ -60,7 +60,6 @@ function HttpClient(baseUrl) {
             }).then(function (response) {
                 handle.handleResponse(response, caller);
             }).catch(function (error) {
-                debugger;
                 handle.handleError(error, caller);
             });
         },
@@ -75,7 +74,6 @@ function HttpClient(baseUrl) {
             }).then(function (response) {
                 handle.handleResponse(response, caller);
             }).catch(function (error) {
-                debugger;
                 handle.handleError(error, caller);
             });
         }
