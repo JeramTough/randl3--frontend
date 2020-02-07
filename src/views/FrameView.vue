@@ -34,37 +34,23 @@
             <!--头布局-->
             <el-header style="padding: 0;margin: 0;background: #b6ffab;color: #ffffff;height: auto;">
 
-                <div style="padding-top: 10px;">
-                    <!--active-icon-class="el-icon-s-fold"
-                    inactive-icon-class="el-icon-s-unfold"-->
-                    <el-switch
-                            v-model="isCollapse"
-                            active-color="#13ce66"
-                            inactive-color="#ff4949"
-                            style="float: left">
-                    </el-switch>
+                <div style="">
 
+                    <my-status-button style="float: left;margin-left: 1%;"
+                                      v-on:statuschanged="onStatusButtonChanged"/>
 
-                    <div style="float: left;color: #000000;font-size: small;margin-left: 3px;margin-right: 3px;">
+                    <div style="float: left;color: #000000;font-size: small;margin-left: 3px;margin-right: 3px;margin-top: 1%">
 
                         <span v-for="item in menuDataQueue" v-bind:key="item.index">
                             >&nbsp;{{ item.title }}
                         </span>
                     </div>
 
-
+                    <!-- 用户视图板块-Start-->
                     <div style="float: right; text-align: start">
-                        <div class="block">
-                            <el-avatar :size="30"
-                                       src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=378824344,1185609431&fm=26&gp=0.jpg"></el-avatar>
-                        </div>
+                        <router-view name="user_fragment"></router-view>
                     </div>
-
-                    <div style="float: right; text-align: start">
-                        <i class="el-icon-edit"></i>
-                        <i class="el-icon-share"></i>
-                        <i class="el-icon-delete"></i>
-                    </div>
+                    <!-- 用户视图板块-End-->
 
                 </div>
 
@@ -117,14 +103,24 @@
 </style>
 
 <script>
+    import StatusButton from '@/components/StatusButton.vue';
+
+
     export default {
         name: "MainView",
+
+        components: {
+            "my-status-button": StatusButton
+        },
+
         data() {
             return {
                 logoUrl: require('../assets/images/logo.png'),
                 isCollapse: false,
                 currentTabName: null,
+                //缓存TabView的视图数据
                 tabViewDataList: [],
+                //当前选中的菜单队列数据
                 menuDataQueue: []
             }
         }
@@ -133,10 +129,14 @@
             //默认第一个菜单被选中
             this.onMenuSelected("0", 1);
 
-            console.log(this.$store.state.count) // -> 1
+            console.log(this.$store.state.systemUser) // -> 1
         }
         ,
         methods: {
+            onStatusButtonChanged(status) {
+                this.isCollapse=status;
+            },
+
             onMenuSelected(index, indexPath) {
                 this.menuDataQueue = this.getMenuDataQueue(index);
                 let menuData = this.menuDataQueue[this.menuDataQueue.length - 1];
@@ -157,10 +157,12 @@
                 let menuData = this.tabViewDataList[tab.index];
                 this.menuDataQueue = this.getMenuDataQueue(menuData.index);
             },
+
             addTabView(menuData) {
                 this.tabViewDataList.push(menuData);
                 this.currentTabName = menuData.viewName;
             },
+
             removeTab(targetName) {
                 let tabs = this.tabViewDataList;
                 let activeName = this.currentTabName;

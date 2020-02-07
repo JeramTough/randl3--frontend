@@ -5,11 +5,11 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
     state: {
-        count: 0
+        systemUser: {}
     },
     mutations: {
-        increment(state) {
-            state.count++
+        loginSuccessfully(state, systemUser) {
+            state.systemUser = systemUser;
         }
     }
 });

@@ -57,8 +57,8 @@
             return {
                 srcImages,
                 userCredentials: {
-                    username: null,
-                    password: null,
+                    username: "superadmin",
+                    password: "superadmin",
                 },
                 isLogining: false
             }
@@ -70,10 +70,15 @@
                 if (!this.isLogining) {
                     apiHandler.getAdminUserApi().login(this.userCredentials, function (data) {
                         if (data.isSuccessful) {
+                            let systemUser = data.responseBody;
+                            //弹出提示
                             Vue.$message({
-                                message: data.responseBody,
+                                message: "【" + systemUser.username + "】登录成功！",
                                 type: 'success'
                             });
+                            //保存用户登录成功数据
+                            Vue.$store.commit('loginSuccessfully', systemUser);
+                            //跳转
                             Vue.$router.push({path: '/Layout'});
                         } else {
                             Vue.$message({

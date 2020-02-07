@@ -14,10 +14,13 @@ const routePaths = [
                 // UserProfile 会被渲染在 User 的 <router-view> 中
                 path: 'Layout',
                 components: {
-                    default: () => import(/* webpackChunkName: "about" */ '@/views/TestView.vue'),
+                    //主框架的某个碎片区域
+                    user_fragment:() => import(/* webpackChunkName: "about" */ '@/views/frame/UserFragment.vue'),
+                    //菜单模块
                     home_view: () => import(/* webpackChunkName: "about" */ '@/views/module/home/HomeView.vue'),
                     admin_user_view: () => import(/* webpackChunkName: "about" */ '@/views/module/user/AdminUserView.vue'),
                     registered_user_view: () => import(/* webpackChunkName: "about" */ '@/views/module/user/RegisteredUserView.vue')
+
                 },
                 //component: () => import(/* webpackChunkName: "about" */ '@/views/TestView.vue')
             }
