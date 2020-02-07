@@ -71,7 +71,7 @@
         position: absolute;
         width: 100%;
         height: 100%;
-        background-image: url("../../assets/images/admin_login_bg.jpg");
+        background-image: url("src/assets/images/admin_login_bg.jpg");
         background-repeat: no-repeat;
         background-size: cover;
         text-align: center;

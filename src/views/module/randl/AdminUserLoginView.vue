@@ -8,7 +8,7 @@
 
             <div class="clear"></div>
             <div class="avtar">
-                <img src="../../assets/images/manager_icon.png"/>
+                <img src="@/assets/images/manager_icon.png"/>
             </div>
             <div style="padding-left: 10px;padding-right: 10px;">
                 <div style="margin-bottom: 30px;">
@@ -211,7 +211,7 @@
     /*end reset*/
     /****-----start-body----****/
     body {
-        background: url(../../assets/images/admin_login_bg.jpg) no-repeat 0px 0px;
+        background: url('../../../assets/images/admin_login_bg.jpg') no-repeat 0px 0px;
         font-family: 'Open Sans', sans-serif;
         background-size: cover;
         -webkit-background-size: cover;

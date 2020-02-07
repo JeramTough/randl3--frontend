@@ -15,9 +15,9 @@ const routePaths = [
                 path: 'Layout',
                 components: {
                     default: () => import(/* webpackChunkName: "about" */ '@/views/TestView.vue'),
-                    home_view: () => import(/* webpackChunkName: "about" */ '@/views/HomeView.vue'),
-                    admin_user_view: () => import(/* webpackChunkName: "about" */ '@/views/user/AdminUserView.vue'),
-                    registered_user_view: () => import(/* webpackChunkName: "about" */ '@/views/user/RegisteredUserView.vue')
+                    home_view: () => import(/* webpackChunkName: "about" */ '@/views/module/home/HomeView.vue'),
+                    admin_user_view: () => import(/* webpackChunkName: "about" */ '@/views/module/user/AdminUserView.vue'),
+                    registered_user_view: () => import(/* webpackChunkName: "about" */ '@/views/module/user/RegisteredUserView.vue')
                 },
                 //component: () => import(/* webpackChunkName: "about" */ '@/views/TestView.vue')
             }
@@ -25,7 +25,7 @@ const routePaths = [
     },
     {
         path: "/adminLogin",
-        component: () => import(/* webpackChunkName: "about" */ '@/views/randl/AdminUserLoginView.vue')
+        component: () => import(/* webpackChunkName: "about" */ '@/views/module/randl/AdminUserLoginView.vue')
     },
     {
         path: "/test",

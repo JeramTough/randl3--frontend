@@ -48,7 +48,7 @@
                     <div style="float: left;color: #000000;font-size: small;margin-left: 3px;margin-right: 3px;">
 
                         <span v-for="item in menuDataQueue" v-bind:key="item.index">
-                            /&nbsp;{{ item.title }}
+                            >&nbsp;{{ item.title }}
                         </span>
                     </div>
 
