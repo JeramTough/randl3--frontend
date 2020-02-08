@@ -5,7 +5,12 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
     state: {
-        systemUser: {}
+        systemUser: {
+            username: "test",
+            role: {
+                description: "游客"
+            }
+        }
     },
     mutations: {
         loginSuccessfully(state, systemUser) {

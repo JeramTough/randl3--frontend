@@ -33,25 +33,30 @@
         <el-container>
             <!--头布局-->
             <el-header style="padding: 0;margin: 0;background: #b6ffab;color: #ffffff;height: auto;">
+                <div>
+                    <el-row type="flex" align="middle">
+                        <el-col :span="2">
+                            <div style="text-align: left;padding-left: 2%;">
+                                <my-status-button style="margin-left: 1%;display: inline;"
+                                                  v-on:statuschanged="onStatusButtonChanged"/>
+                            </div>
+                        </el-col>
+                        <el-col :span="14">
+                            <div style="color: #000000;font-size: small;margin-left: 3px;margin-right: 3px;text-align: left;">
+                                <span v-for="item in menuDataQueue" v-bind:key="item.index">
+                                    /&nbsp;{{ item.title }}
+                                </span>
+                            </div>
+                        </el-col>
+                        <el-col :span="8">
+                            <div style="text-align: right">
+                                <!-- 用户视图板块-Start-->
+                                <router-view name="user_fragment"></router-view>
+                                <!-- 用户视图板块-End-->
+                            </div>
 
-                <div style="">
-
-                    <my-status-button style="float: left;margin-left: 1%;"
-                                      v-on:statuschanged="onStatusButtonChanged"/>
-
-                    <div style="float: left;color: #000000;font-size: small;margin-left: 3px;margin-right: 3px;margin-top: 1%">
-
-                        <span v-for="item in menuDataQueue" v-bind:key="item.index">
-                            >&nbsp;{{ item.title }}
-                        </span>
-                    </div>
-
-                    <!-- 用户视图板块-Start-->
-                    <div style="float: right; text-align: start">
-                        <router-view name="user_fragment"></router-view>
-                    </div>
-                    <!-- 用户视图板块-End-->
-
+                        </el-col>
+                    </el-row>
                 </div>
 
             </el-header>
@@ -112,7 +117,11 @@
         components: {
             "my-status-button": StatusButton
         },
-
+        mounted: function () {
+            //默认第一个菜单被选中
+            this.onMenuSelected("0", 1);
+        }
+        ,
         data() {
             return {
                 logoUrl: require('../assets/images/logo.png'),
@@ -125,16 +134,9 @@
             }
         }
         ,
-        mounted: function () {
-            //默认第一个菜单被选中
-            this.onMenuSelected("0", 1);
-
-            console.log(this.$store.state.systemUser) // -> 1
-        }
-        ,
         methods: {
             onStatusButtonChanged(status) {
-                this.isCollapse=status;
+                this.isCollapse = status;
             },
 
             onMenuSelected(index, indexPath) {
