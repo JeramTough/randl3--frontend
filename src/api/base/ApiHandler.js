@@ -1,4 +1,4 @@
-import AdminUserApi from "@/api/AdminUserApis";
+import AdminUserApi from "@/api/AdminUserApi";
 
 let apiHandler = {
     getAdminUserApi: function () {

@@ -68,6 +68,7 @@
                 let Vue = this;
 
                 if (!this.isLogining) {
+
                     apiHandler.getAdminUserApi().login(this.userCredentials, function (data) {
                         if (data.isSuccessful) {
                             let systemUser = data.responseBody;
@@ -89,9 +90,12 @@
 
                         Vue._data.isLogining = false;
                     });
+
+
                 }
 
-                this.isLogining = true;
+                // this.isLogining = true;
+
 
             }
         },
@@ -99,7 +103,7 @@
             loginStatus: function () {
                 return this.isLogining ? "登录中...." : "登录";
             }
-        }
+        },
     }
 </script>
 

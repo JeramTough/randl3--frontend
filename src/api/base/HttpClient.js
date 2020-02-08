@@ -43,6 +43,7 @@ function HttpClient(baseUrl) {
                 baseURL: baseUrl,
                 method: 'get',
                 url: url,
+                withCredentials: true,
                 params: params
             }).then(function (response) {
                 handle.handleResponse(response, caller);
@@ -56,6 +57,7 @@ function HttpClient(baseUrl) {
             Vue.axios({
                 method: 'post',
                 url: url,
+                withCredentials: true,
                 data: data
             }).then(function (response) {
                 handle.handleResponse(response, caller);
@@ -70,6 +72,7 @@ function HttpClient(baseUrl) {
                 baseURL: baseUrl,
                 method: 'post',
                 url: url,
+                withCredentials: true,
                 params: params
             }).then(function (response) {
                 handle.handleResponse(response, caller);
@@ -80,7 +83,7 @@ function HttpClient(baseUrl) {
     };
 }
 
-const randl2HttpClient = new HttpClient("http://127.0.0.1:8088/randl2");
+const randl2HttpClient = new HttpClient("http://localhost:8088/randl2");
 
 
 export {randl2HttpClient};

@@ -17,7 +17,7 @@
             </el-col>
             <el-col :span="8">
                 <div style="text-align: left">
-                    <el-dropdown style="">
+                    <el-dropdown style="" @command="handleMenuCommand">
                         <span class="el-dropdown-link">
                             <el-avatar :size="30"
                                        src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=378824344,1185609431&fm=26&gp=0.jpg"></el-avatar>
@@ -25,11 +25,8 @@
                         </span>
 
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item>黄金糕</el-dropdown-item>
-                            <el-dropdown-item>狮子头</el-dropdown-item>
-                            <el-dropdown-item>螺蛳粉</el-dropdown-item>
-                            <el-dropdown-item disabled>双皮奶</el-dropdown-item>
-                            <el-dropdown-item divided>蚵仔煎</el-dropdown-item>
+                            <el-dropdown-item command="0">修改信息</el-dropdown-item>
+                            <el-dropdown-item command="1">退出登录</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </div>
@@ -50,7 +47,21 @@
                 return this.$store.state.systemUser;
             }
         },
-        methods: {}
+        methods: {
+            handleMenuCommand(command) {
+
+                switch (Number(command)) {
+                    case 0:
+                        break;
+                    case 1:
+                        this.$router.push({path: '/adminLogin'});
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+        }
     }
 </script>
 

@@ -119,7 +119,7 @@
         },
         mounted: function () {
             //默认第一个菜单被选中
-            this.onMenuSelected("0", 1);
+            this.onMenuSelected("1-0", 1);
         }
         ,
         data() {
