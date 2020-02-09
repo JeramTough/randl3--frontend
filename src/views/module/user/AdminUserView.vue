@@ -41,11 +41,16 @@
             <el-table-column
                     prop="emailAddress"
                     label="邮箱地址"
-                    width="120">
+                    width="150">
             </el-table-column>
             <el-table-column
                     prop="registrationTime"
                     label="注册时间"
+                    width="200">
+            </el-table-column>
+            <el-table-column
+                    prop="role.description"
+                    label="角色名"
                     width="120">
             </el-table-column>
             <el-table-column
@@ -118,14 +123,7 @@
                 /**
                  *表格数据
                  */
-                tableData: [
-                    {
-                        username: '2016-05-03',
-                        phoneNumber: '王小虎',
-                        emailAddress: '上海',
-                        registrationTime: '普陀区'
-                    }
-                ]
+                tableData: []
                 ,
                 searchParameter: {
                     keyword: ''
@@ -145,7 +143,7 @@
                         let pageData = data.responseBody;
                         Vue._data.currentTotal=pageData.total;
                         Vue._data.isLoading = false;
-                        Vue._data.tableData=pageData.records;
+                        Vue._data.tableData=pageData.list;
                     } else {
                         Vue.$message({
                             message: data.responseBody,
