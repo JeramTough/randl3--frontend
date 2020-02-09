@@ -41,6 +41,7 @@
       "no-console": "off",
       "no-unused-vars": "warn",
       "vue/no-unused-vars": "off",
+      "vue/valid-v-for": "off",
       "no-unused-components": "off",
       "no-debugger": "off"
     }

@@ -1,11 +1,8 @@
 import {randl2HttpClient} from './base/HttpClient'
 
-const BASE = "/adminUser";
+const BASE = "/role";
 
 export default {
-    login: function (params, caller) {
-        randl2HttpClient.postWithParams(BASE + "/login", params, caller);
-    },
     getByPage(params, caller) {
         randl2HttpClient.get(BASE + "/page", params, caller);
     },

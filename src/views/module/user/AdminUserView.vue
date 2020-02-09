@@ -18,7 +18,7 @@
             <el-col :span="6">
                 <el-button type="primary" icon="el-icon-refresh" size="small" round @click="obtainTableData">刷新
                 </el-button>
-                <el-button type="primary" icon="el-icon-plus" size="small" round>新增</el-button>
+                <el-button type="primary" icon="el-icon-plus" size="small" round @click="addEntity">新增</el-button>
             </el-col>
         </el-row>
 
@@ -54,6 +54,11 @@
                     width="120">
             </el-table-column>
             <el-table-column
+                    prop="enabled"
+                    label="是否可用"
+                    width="120">
+            </el-table-column>
+            <el-table-column
                     fixed="right"
                     label="操作"
                     width="120">
@@ -66,7 +71,7 @@
                     </el-button>
 
                     <el-button
-                            @click.native.prevent="deleteRow(scope.$index, tableData)"
+                            @click.native.prevent="updateRow(scope.$index, tableData)"
                             type="text"
                             size="small">
                         修改
@@ -89,14 +94,20 @@
 
         <el-divider/>
 
+        <!--对话框控件-->
+        <my-au-dialog :visible.sync="dialogVisible" :title="dialogTitle"/>
     </div>
 
 </template>
 
 <script>
     import apiHandler from "@/api/base/ApiHandler";
+    import AUdialog from "@/components/AddOrUpdateAdminUserDialog.vue";
 
     export default {
+        components: {
+            "my-au-dialog": AUdialog
+        },
         mounted: function () {
             this.obtainTableData();
         },
@@ -108,6 +119,9 @@
                  */
                 isLoading: false,
 
+                dialogVisible: false,
+
+                dialogTitle: "",
                 /**
                  *表格当前页指针
                  */
@@ -141,9 +155,13 @@
                 }, function (data) {
                     if (data.isSuccessful) {
                         let pageData = data.responseBody;
-                        Vue._data.currentTotal=pageData.total;
+                        Vue._data.currentTotal = pageData.total;
                         Vue._data.isLoading = false;
-                        Vue._data.tableData=pageData.list;
+                        for (let item of pageData.list) {
+                            item.enabled = item.accountStatus === 1 ? '是' : '否';
+                        }
+                        Vue._data.tableData = pageData.list;
+
                     } else {
                         Vue.$message({
                             message: data.responseBody,
@@ -152,18 +170,41 @@
                     }
                 });
             },
+
+            /**
+             * 添加一个实体
+             */
+            addEntity() {
+
+            },
             handleSizeChange(val) {
                 this.currentPageSize = val;
-                console.log(`每页 ${val} 条`);
             },
             handleCurrentChange(val) {
                 this.currentPageIndex = val;
-                console.log(`当前页: ${val}`);
             },
             queryByKeyword() {
             },
             deleteRow(index, rows) {
-                rows.splice(index, 1);
+                let uid = rows[index].uid;
+                this.isLoading = true;
+                let Vue = this;
+                apiHandler.getAdminUserApi().remove({uid: uid}, (data) => {
+                    if (data.isSuccessful) {
+                        Vue.$messageUtil.success(data.responseBody);
+                        rows.splice(index, 1);
+                    } else {
+                        Vue.$messageUtil.error(data.responseBody);
+                    }
+                    this.isLoading = false;
+                });
+            }
+            ,
+            updateRow(index, rows) {
+                this.dialogTitle = "修改账号信息";
+                this.dialogVisible = true;
+                let systemUser = rows[index];
+                this.$store.commit('setEditingSystemUser', systemUser);
             }
         },
     }

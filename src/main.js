@@ -6,11 +6,15 @@ import router from './router'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import store from './store'
+import messageUtil from './util/MessageUtil';
 
 Vue.config.productionTip = false;
 
 Vue.use(ElementUI);
-Vue.use(VueAxios,axios);
+Vue.use(VueAxios, axios);
+
+// 把全局js挂接到vue原型上
+Vue.prototype.$messageUtil = messageUtil;
 
 new Vue({
     router,
