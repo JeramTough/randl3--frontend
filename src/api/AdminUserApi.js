@@ -15,6 +15,9 @@ export default {
     remove(params, caller) {
         randl2HttpClient.postWithParams(BASE + "/remove", params, caller);
     },
+    add(data, caller) {
+        randl2HttpClient.post(BASE + "/add", data, caller);
+    },
     update(data, caller) {
         randl2HttpClient.post(BASE + "/update", data, caller);
     }

@@ -18,7 +18,7 @@
             <el-col :span="6">
                 <el-button type="primary" icon="el-icon-refresh" size="small" round @click="obtainTableData">刷新
                 </el-button>
-                <el-button type="primary" icon="el-icon-plus" size="small" round @click="addEntity">新增</el-button>
+                <el-button type="primary" icon="el-icon-plus" size="small" round @click="addRow">新增</el-button>
             </el-col>
         </el-row>
 
@@ -132,10 +132,6 @@
                  */
                 currentPageSize: 100,
                 /**
-                 *表格当前页能显示的大小
-                 */
-                currentTotal: 1000,
-                /**
                  *表格数据
                  */
                 tableData: []
@@ -147,7 +143,14 @@
             }
         }
         ,
-        computed: {}
+        computed: {
+            /**
+             *所有数量数
+             */
+            currentTotal: function () {
+                return this.tableData.length;
+            }
+        }
         ,
         methods: {
             obtainTableData() {
@@ -159,7 +162,6 @@
                 }, function (data) {
                     if (data.isSuccessful) {
                         let pageData = data.responseBody;
-                        Vue._data.currentTotal = pageData.total;
                         Vue._data.isLoading = false;
                         for (let item of pageData.list) {
                             item.enabled = item.accountStatus === 1 ? '是' : '否';
@@ -173,13 +175,6 @@
                         });
                     }
                 });
-            },
-
-            /**
-             * 添加一个实体
-             */
-            addEntity() {
-
             },
             handleSizeChange(val) {
                 this.currentPageSize = val;
@@ -210,12 +205,24 @@
                 this.selectedAdminUser = rows[index];
             }
             ,
+            addRow() {
+                this.dialogTitle = "添加新账号";
+                this.dialogVisible = true;
+                this.selectedAdminUser = null;
+            }
+            ,
             onDialogDone(editedSystemUser) {
-                console.info(editedSystemUser);
-                Object.keys(editedSystemUser).forEach(key => {
-                    this.selectedAdminUser[key] = editedSystemUser[key];
-                });
-                this.selectedAdminUser.enabled = editedSystemUser.accountStatus === 1 ? '是' : '否';
+
+                if (editedSystemUser.uid == null) {
+                    //新增的情况下
+                    this.obtainTableData();
+                } else {
+                    //更新的情况下
+                    this.selectedAdminUser.enabled = editedSystemUser.accountStatus === 1 ? '是' : '否';
+                    Object.keys(editedSystemUser).forEach(key => {
+                        this.selectedAdminUser[key] = editedSystemUser[key];
+                    });
+                }
             }
         },
     }

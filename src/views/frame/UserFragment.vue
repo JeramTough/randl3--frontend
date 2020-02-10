@@ -10,9 +10,9 @@
                 <div style="color: #000000;text-align: right;">
                     <div style="color: #0d8f13;font-size: small">
                         <i class="el-icon-postcard"></i>
-                        {{systemUsesr.role.description}}
+                        {{systemUser.role.description}}
                     </div>
-                    <div style="font-size: large">{{systemUsesr.username}}</div>
+                    <div style="font-size: large">{{systemUser.username}}</div>
                 </div>
             </el-col>
             <el-col :span="8">
@@ -20,7 +20,7 @@
                     <el-dropdown style="" @command="handleMenuCommand">
                         <span class="el-dropdown-link">
                             <el-avatar :size="30"
-                                       src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=378824344,1185609431&fm=26&gp=0.jpg"></el-avatar>
+                                       :src="systemUser.surfaceImage"></el-avatar>
                             <i class="el-icon-arrow-down el-icon&#45;&#45;right"/>
                         </span>
 
@@ -42,7 +42,7 @@
             return {}
         },
         computed: {
-            systemUsesr: function () {
+            systemUser: function () {
 
                 return this.$store.state.systemUser;
             }

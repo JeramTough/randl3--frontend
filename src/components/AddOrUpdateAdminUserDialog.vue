@@ -14,7 +14,14 @@
                 </el-form-item>
                 <el-form-item label="密码" :label-width="formLabelWidth">
                     <el-input v-model.lazy="formData.password" autocomplete="off"
-                              placeholder="需要修改密码才填" @input="onFormChanged"></el-input>
+                              :placeholder="passwordHint" @input="onFormChanged"
+                              v-bind:show-password="dataSource==null"></el-input>
+                </el-form-item>
+                <el-form-item v-show="dataSource==null" label="重复密码" :label-width="formLabelWidth">
+                    <el-input v-model.lazy="formData.repeatedPassword" autocomplete="off"
+                              placeholder="重复密码" @input="onFormChanged"
+                              v-bind:show-password="dataSource==null">>
+                    </el-input>
                 </el-form-item>
                 <el-form-item label="手机号码" :label-width="formLabelWidth">
                     <el-input v-model="formData.phoneNumber" autocomplete="off"
@@ -31,7 +38,7 @@
                                    :value="item.fid"/>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="是否可用" :label-width="formLabelWidth">
+                <el-form-item v-show="dataSource!=null" label="是否可用" :label-width="formLabelWidth">
                     <el-switch v-model="isEnabled" @change="onFormChanged"></el-switch>
                 </el-form-item>
             </el-form>
@@ -59,12 +66,14 @@
 
         data: function () {
             return {
+                passwordHint: null,
                 formLabelWidth: '120px',
                 roles: null,
                 formData: {
                     uid: null,
                     username: null,
                     password: null,
+                    repeatedPassword: null,
                     phoneNumber: null,
                     emailAddress: null,
                     accountStatus: null,
@@ -93,13 +102,18 @@
 
         },
         methods: {
+            /**
+             * 当点击取消或者确定关闭对话框时
+             * @param now 是否马上关闭
+             */
             changeVisible(now) {
                 let Vue = this;
                 if (now || !this.isFormChanged) {
                     this.$emit('update:visible', false);
                 } else {
                     this.isProcessingOption = true;
-                    apiHandler.getAdminUserApi().update(this.formData, (data) => {
+
+                    let caller = (data) => {
                         if (data.isSuccessful) {
                             Vue._data.isProcessingOption = false;
                             Vue.$emit('update:visible', false);
@@ -109,7 +123,15 @@
                             Vue._data.isProcessingOption = false;
                             Vue.$messageUtil.error("操作失败！" + data.responseBody);
                         }
-                    });
+                    };
+
+                    if (this.dataSource != null) {
+                        apiHandler.getAdminUserApi().update(this.formData, caller);
+                    } else {
+                        apiHandler.getAdminUserApi().add(this.formData, caller);
+                    }
+
+
                 }
             }
             ,
@@ -131,14 +153,26 @@
                 }
             },
             refreshFormData() {
-                this.formData.uid = this.dataSource.uid;
-                this.formData.username = this.dataSource.username;
-                this.formData.password = this.dataSource.password;
-                this.formData.phoneNumber = this.dataSource.phoneNumber;
-                this.formData.emailAddress = this.dataSource.emailAddress;
-                this.formData.accountStatus = this.dataSource.accountStatus;
-                this.formData.roleId = this.dataSource.role.fid;
-                // this.formData.isEnabled = this.dataSource.accountStatus === 1;
+                if (this.dataSource != null) {
+                    //if it's the update option’
+                    this.passwordHint = "需要更新密码才填";
+
+                    this.formData.uid = this.dataSource.uid;
+                    this.formData.username = this.dataSource.username;
+                    this.formData.password = this.dataSource.password;
+                    this.formData.phoneNumber = this.dataSource.phoneNumber;
+                    this.formData.emailAddress = this.dataSource.emailAddress;
+                    this.formData.accountStatus = this.dataSource.accountStatus;
+                    this.formData.roleId = this.dataSource.role.fid;
+                } else {
+                    //if it's the update option’
+                    this.passwordHint = "密码为必填字段";
+
+                    Object.keys(this.formData).forEach(key => {
+                        this.formData[key] = null;
+                    });
+                }
+
             },
             handleDoneEvent() {
                 let systemUser = {};
@@ -155,8 +189,7 @@
                 this.isFormChanged = true;
             }
         },
-        watch: {
-        }
+        watch: {}
     }
 </script>
 

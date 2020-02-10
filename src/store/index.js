@@ -9,7 +9,8 @@ const store = new Vuex.Store({
             username: "test",
             role: {
                 description: "游客"
-            }
+            },
+            surfaceImage: "http://img.hao661.com/qq.hao661.com/uploads/allimg/c160130/1454094J19DP-2X553.jpg"
         }
     },
     mutations: {
