@@ -11,6 +11,52 @@ function HttpClient(baseUrl) {
             this.handle.isPrintedLog = false;
         },
 
+        get: function (url, params, caller) {
+            let handle = this.handle;
+            Vue.axios({
+                baseURL: baseUrl,
+                method: 'get',
+                url: url,
+                withCredentials: true,
+                params: params
+            }).then(function (response) {
+                handle.handleResponse(response, caller);
+            }).catch(function (error) {
+                handle.handleError(error, caller);
+            });
+        },
+
+        post: function (url, data, caller) {
+            let handle = this.handle;
+            Vue.axios({
+                baseURL: baseUrl,
+                method: 'post',
+                url: url,
+                withCredentials: true,
+                data: data
+            }).then(function (response) {
+                handle.handleResponse(response, caller);
+            }).catch(function (error) {
+                handle.handleError(error, caller);
+            });
+        },
+
+        postWithParams: function (url, params, caller) {
+            let handle = this.handle;
+            Vue.axios({
+                baseURL: baseUrl,
+                method: 'post',
+                url: url,
+                withCredentials: true,
+                params: params
+            }).then(function (response) {
+                handle.handleResponse(response, caller);
+            }).catch(function (error) {
+                handle.handleError(error, caller);
+            });
+        },
+
+        //*****************************************************
         handle: {
             isPrintedLog: false,
 
@@ -37,49 +83,6 @@ function HttpClient(baseUrl) {
             }
         },
 
-        get: function (url, params, caller) {
-            let handle = this.handle;
-            Vue.axios({
-                baseURL: baseUrl,
-                method: 'get',
-                url: url,
-                withCredentials: true,
-                params: params
-            }).then(function (response) {
-                handle.handleResponse(response, caller);
-            }).catch(function (error) {
-                handle.handleError(error, caller);
-            });
-        },
-
-        post: function (url, data, caller) {
-            let handle = this.handle;
-            Vue.axios({
-                method: 'post',
-                url: url,
-                withCredentials: true,
-                data: data
-            }).then(function (response) {
-                handle.handleResponse(response, caller);
-            }).catch(function (error) {
-                handle.handleError(error, caller);
-            });
-        },
-
-        postWithParams: function (url, params, caller) {
-            let handle = this.handle;
-            Vue.axios({
-                baseURL: baseUrl,
-                method: 'post',
-                url: url,
-                withCredentials: true,
-                params: params
-            }).then(function (response) {
-                handle.handleResponse(response, caller);
-            }).catch(function (error) {
-                handle.handleError(error, caller);
-            });
-        }
     };
 }
 

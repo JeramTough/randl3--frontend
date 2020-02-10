@@ -95,7 +95,7 @@
         <el-divider/>
 
         <!--对话框控件-->
-        <my-au-dialog :visible.sync="dialogVisible" :title="dialogTitle"/>
+        <my-au-dialog :visible.sync="dialogVisible" :title="dialogTitle" v-on:done="onDialogDone"/>
     </div>
 
 </template>
@@ -205,6 +205,10 @@
                 this.dialogVisible = true;
                 let systemUser = rows[index];
                 this.$store.commit('setEditingSystemUser', systemUser);
+            }
+            ,
+            onDialogDone(editedSystemUser) {
+                console.info(editedSystemUser);
             }
         },
     }

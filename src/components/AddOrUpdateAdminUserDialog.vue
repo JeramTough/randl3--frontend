@@ -1,39 +1,46 @@
 <template>
     <div>
         <el-dialog slot="header" title="" :visible.sync="visible" width="70%" @open="onOpened"
-                   :show-close="false" :center="true" :close-on-press-escape="false" :close-on-click-modal="false">
+                   :show-close="false" :center="true" :close-on-press-escape="false" :close-on-click-modal="false"
+                   v-loading="true">
 
             <div class="title" style="background: #07d02c;color: #ffffff;" slot="title">{{title}}</div>
 
-            <div v-show="isLoading"><i class="el-icon-loading"></i>角色数据正在加载中。。。</div>
+            <div v-show="isLoading"><i style="font-size: large" class="el-icon-loading"></i>角色数据正在加载中。。。</div>
 
-            <el-form v-if="((!isLoading)&&(visible))" :model="formData" label-position="left">
+            <el-form v-if="((!isLoading))" :model="formData" label-position="left">
                 <el-form-item label="用户名" :label-width="formLabelWidth">
-                    <el-input v-model="formData.username" autocomplete="off"></el-input>
+                    <el-input v-model="formData.username" autocomplete="off" @input="onFormChanged"></el-input>
                 </el-form-item>
                 <el-form-item label="密码" :label-width="formLabelWidth">
-                    <el-input v-model.lazy="formData.password" autocomplete="off"></el-input>
+                    <el-input v-model.lazy="formData.password" autocomplete="off"
+                              placeholder="需要修改密码才填" @input="onFormChanged"></el-input>
                 </el-form-item>
                 <el-form-item label="手机号码" :label-width="formLabelWidth">
-                    <el-input v-model="formData.phoneNumber" autocomplete="off"></el-input>
+                    <el-input v-model="formData.phoneNumber" autocomplete="off"
+                              @input="onFormChanged"></el-input>
                 </el-form-item>
                 <el-form-item label="邮箱地址" :label-width="formLabelWidth">
-                    <el-input v-model="formData.emailAddress" autocomplete="off"></el-input>
+                    <el-input v-model="formData.emailAddress" autocomplete="off"
+                              @input="onFormChanged"></el-input>
                 </el-form-item>
                 <el-form-item label="角色选择" :label-width="formLabelWidth" style="text-align: left">
-                    <el-select v-model="formData.roleId" placeholder="角色拥有相应权限">
+                    <el-select v-model="formData.roleId" placeholder="角色拥有相应权限"
+                               @change="onFormChanged">
                         <el-option v-for="item in roles" :label="item.description" :key="item.fid"
                                    :value="item.fid"/>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="是否可用" :label-width="formLabelWidth">
-                    <el-switch v-model="formData.isEnabled"></el-switch>
+                    <el-switch v-model="formData.isEnabled" @change="onFormChanged"></el-switch>
                 </el-form-item>
             </el-form>
 
             <div slot="footer" class="dialog-footer">
-                <el-button @click.native.prevent="changeVisible(false)">取 消</el-button>
-                <el-button type="primary" @click.native.prevent="changeVisible(false)">确 定</el-button>
+                <el-button @click.native.prevent="changeVisible(true)">取 消</el-button>
+                <el-button type="primary" @click.native.prevent="changeVisible(false)"
+                           :loading="isProcessingOption">确 定
+                </el-button>
             </div>
         </el-dialog>
     </div>
@@ -50,30 +57,50 @@
         mounted: function () {
             //添加响应式属性从store里边拉。
             let editingSystemUser = this.$store.state.editingSystemUser;
-            editingSystemUser.roleId=null;
+            editingSystemUser.roleId = null;
             editingSystemUser.isEnabled = null;
             this.formData = Object.assign({}, this.formData, editingSystemUser);
         },
 
         data: function () {
             return {
-                some: false,
                 formLabelWidth: '120px',
                 roles: null,
-                formData: {}
+                formData: {},
+                isFormChanged: false,
+                isProcessingOption: false
             }
         },
         computed: {
             isLoading: function () {
                 return this.roles == null;
             }
+
         },
         methods: {
-            changeVisible(newValue) {
-                this.$emit('update:visible', newValue); //这种方法是对的
+            changeVisible(now) {
+                let Vue = this;
+                if (now || !this.isFormChanged) {
+                    this.$emit('update:visible', false);
+                } else {
+                    this.isProcessingOption = true;
+                    apiHandler.getAdminUserApi().update(this.formData, (data) => {
+                        if (data.isSuccessful) {
+                            Vue._data.isProcessingOption = false;
+                            Vue.$emit('update:visible', false);
+                            Vue.$messageUtil.success(data.responseBody);
+                            Vue.handleDoneEvent();
+                        } else {
+                            Vue._data.isProcessingOption = false;
+                            Vue.$messageUtil.error("操作失败！" + data.responseBody);
+                        }
+                    });
+                }
             }
             ,
             onOpened: function () {
+                this.isFormChanged = false;
+
                 let Vue = this;
                 if (this.roles == null) {
                     apiHandler.getRoleApi().getAll(null, (data) => {
@@ -98,6 +125,21 @@
                 this.formData.accountStatus = editingSystemUser.accountStatus;
                 this.formData.roleId = editingSystemUser.role.fid;
                 this.formData.isEnabled = editingSystemUser.accountStatus === 1;
+            },
+            handleDoneEvent(){
+                let systemUser = {};
+                Object.keys(this.formData).forEach(key=>{
+                    systemUser[key]=this.formData[key];
+                });
+                let thisRoleId=this.formData.roleId;
+                debugger;
+                let tempRoles=(this.roles.filter(item => item.fid===thisRoleId));
+                systemUser.role=tempRoles[0];
+                this.$emit('done', systemUser);
+            }
+            ,
+            onFormChanged() {
+                this.isFormChanged = true;
             }
         },
         watch: {}
