@@ -32,7 +32,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="是否可用" :label-width="formLabelWidth">
-                    <el-switch v-model="formData.isEnabled" @change="onFormChanged"></el-switch>
+                    <el-switch v-model="isEnabled" @change="onFormChanged"></el-switch>
                 </el-form-item>
             </el-form>
 
@@ -51,22 +51,25 @@
 
     export default {
         name: "AddOrUpdateAdminUserDialog",
-        props: ['visible', 'title'],
+        props: ['dataSource', 'visible', 'title'],
         components: {},
 
         mounted: function () {
-            //添加响应式属性从store里边拉。
-            let editingSystemUser = this.$store.state.editingSystemUser;
-            editingSystemUser.roleId = null;
-            editingSystemUser.isEnabled = null;
-            this.formData = Object.assign({}, this.formData, editingSystemUser);
         },
 
         data: function () {
             return {
                 formLabelWidth: '120px',
                 roles: null,
-                formData: {},
+                formData: {
+                    uid: null,
+                    username: null,
+                    password: null,
+                    phoneNumber: null,
+                    emailAddress: null,
+                    accountStatus: null,
+                    roleId: null
+                },
                 isFormChanged: false,
                 isProcessingOption: false
             }
@@ -74,6 +77,18 @@
         computed: {
             isLoading: function () {
                 return this.roles == null;
+            },
+            isEnabled: {
+                get: function () {
+                    return this.formData.accountStatus === 1;
+                },
+                set: function (newValue) {
+                    if (newValue) {
+                        this.formData.accountStatus = 1;
+                    } else {
+                        this.formData.accountStatus = 0;
+                    }
+                }
             }
 
         },
@@ -116,25 +131,24 @@
                 }
             },
             refreshFormData() {
-                let editingSystemUser = this.$store.state.editingSystemUser;
-                this.formData.uid = editingSystemUser.uid;
-                this.formData.username = editingSystemUser.username;
-                this.formData.password = editingSystemUser.password;
-                this.formData.phoneNumber = editingSystemUser.phoneNumber;
-                this.formData.emailAddress = editingSystemUser.emailAddress;
-                this.formData.accountStatus = editingSystemUser.accountStatus;
-                this.formData.roleId = editingSystemUser.role.fid;
-                this.formData.isEnabled = editingSystemUser.accountStatus === 1;
+                this.formData.uid = this.dataSource.uid;
+                this.formData.username = this.dataSource.username;
+                this.formData.password = this.dataSource.password;
+                this.formData.phoneNumber = this.dataSource.phoneNumber;
+                this.formData.emailAddress = this.dataSource.emailAddress;
+                this.formData.accountStatus = this.dataSource.accountStatus;
+                this.formData.roleId = this.dataSource.role.fid;
+                // this.formData.isEnabled = this.dataSource.accountStatus === 1;
             },
-            handleDoneEvent(){
+            handleDoneEvent() {
                 let systemUser = {};
-                Object.keys(this.formData).forEach(key=>{
-                    systemUser[key]=this.formData[key];
+                Object.keys(this.formData).forEach(key => {
+                    systemUser[key] = this.formData[key];
                 });
-                let thisRoleId=this.formData.roleId;
+                let thisRoleId = this.formData.roleId;
                 debugger;
-                let tempRoles=(this.roles.filter(item => item.fid===thisRoleId));
-                systemUser.role=tempRoles[0];
+                let tempRoles = (this.roles.filter(item => item.fid === thisRoleId));
+                systemUser.role = tempRoles[0];
                 this.$emit('done', systemUser);
             }
             ,
@@ -142,7 +156,11 @@
                 this.isFormChanged = true;
             }
         },
-        watch: {}
+        watch: {
+            dataSource: function (newVlue) {
+
+            }
+        }
     }
 </script>
 

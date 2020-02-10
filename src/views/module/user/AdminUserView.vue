@@ -95,7 +95,7 @@
         <el-divider/>
 
         <!--对话框控件-->
-        <my-au-dialog :visible.sync="dialogVisible" :title="dialogTitle" v-on:done="onDialogDone"/>
+        <my-au-dialog :data-source="selectedAdminUser" :visible.sync="dialogVisible" :title="dialogTitle" v-on:done="onDialogDone"/>
     </div>
 
 </template>
@@ -141,7 +141,8 @@
                 ,
                 searchParameter: {
                     keyword: ''
-                }
+                },
+                selectedAdminUser:null
             }
         }
         ,
@@ -203,8 +204,7 @@
             updateRow(index, rows) {
                 this.dialogTitle = "修改账号信息";
                 this.dialogVisible = true;
-                let systemUser = rows[index];
-                this.$store.commit('setEditingSystemUser', systemUser);
+                this.selectedAdminUser=rows[index];
             }
             ,
             onDialogDone(editedSystemUser) {
