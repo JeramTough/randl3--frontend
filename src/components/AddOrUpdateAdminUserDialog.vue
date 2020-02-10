@@ -146,7 +146,6 @@
                     systemUser[key] = this.formData[key];
                 });
                 let thisRoleId = this.formData.roleId;
-                debugger;
                 let tempRoles = (this.roles.filter(item => item.fid === thisRoleId));
                 systemUser.role = tempRoles[0];
                 this.$emit('done', systemUser);
@@ -157,9 +156,6 @@
             }
         },
         watch: {
-            dataSource: function (newVlue) {
-
-            }
         }
     }
 </script>
