@@ -182,6 +182,7 @@
             },
             handleCurrentChange(val) {
                 this.currentPageIndex = val;
+                this.obtainTableData();
             },
             queryByKeyword() {
                 let Vue = this;

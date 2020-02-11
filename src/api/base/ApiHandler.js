@@ -1,5 +1,6 @@
 import AdminUserApi from "@/api/AdminUserApi";
 import RoleApi from "@/api/RoleApi";
+import ApiInfoApi from "@/api/ApiInfoApi";
 
 let apiHandler = {
     getAdminUserApi: function () {
@@ -7,6 +8,9 @@ let apiHandler = {
     },
     getRoleApi: function () {
         return RoleApi;
+    },
+    getApiInfoApi: function () {
+        return ApiInfoApi;
     }
 };
 
