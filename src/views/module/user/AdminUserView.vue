@@ -168,7 +168,8 @@
                         }
                         Vue._data.tableData = pageData.list;
 
-                    } else {
+                    }
+                    else {
                         Vue.$message({
                             message: data.responseBody,
                             type: 'error'
@@ -183,6 +184,22 @@
                 this.currentPageIndex = val;
             },
             queryByKeyword() {
+                let Vue = this;
+                if (this.searchParameter.keyword.length > 0) {
+                    apiHandler.getAdminUserApi().byKeyword({keyword: this.searchParameter.keyword}, (data) => {
+                        if (data.isSuccessful) {
+                            Vue._data.tableData = [data.responseBody];
+                        }
+                        else {
+                            Vue.$messageUtil.error(data.responseBody);
+                        }
+                        this.isLoading = false;
+                    });
+                }
+                else {
+                    this.obtainTableData();
+                }
+
             },
             deleteRow(index, rows) {
                 let uid = rows[index].uid;
@@ -192,7 +209,8 @@
                     if (data.isSuccessful) {
                         Vue.$messageUtil.success(data.responseBody);
                         rows.splice(index, 1);
-                    } else {
+                    }
+                    else {
                         Vue.$messageUtil.error(data.responseBody);
                     }
                     this.isLoading = false;
@@ -216,7 +234,8 @@
                 if (editedSystemUser.uid == null) {
                     //新增的情况下
                     this.obtainTableData();
-                } else {
+                }
+                else {
                     //更新的情况下
                     this.selectedAdminUser.enabled = editedSystemUser.accountStatus === 1 ? '是' : '否';
                     Object.keys(editedSystemUser).forEach(key => {

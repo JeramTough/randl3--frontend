@@ -13,20 +13,56 @@
                         fit="fill" :src="logoUrl"></el-image>
             </div>
 
-            <el-menu-item index="0">
-                <i class="el-icon-s-home menu-icon"></i>
-                <span slot="title" class="menu-title">主页</span>
-            </el-menu-item>
-            <el-submenu index="1">
-                <template slot="title">
-                    <i class="el-icon-s-custom menu-icon"></i>
-                    <span slot="title" class="menu-title">用户管理</span>
-                </template>
-                <el-menu-item-group>
-                    <el-menu-item index="1-0">管理员账户管理</el-menu-item>
-                    <el-menu-item index="1-1">普通用户管理</el-menu-item>
-                </el-menu-item-group>
-            </el-submenu>
+
+            <div v-for="menuNote in menuNotes" :key="menuNote.index">
+
+                <el-menu-item v-if="menuNote.children==null" :index="menuNote.index">
+                    <i :class="menuNote.iconClass"></i>
+                    <span slot="title" class="menu-title">{{menuNote.title}}</span>
+                </el-menu-item>
+
+                <el-submenu v-if="menuNote.children!=null" :index="menuNote.index">
+                    <template slot="title">
+                        <i :class="menuNote.iconClass"></i>
+                        <span slot="title" class="menu-title">{{menuNote.title}}</span>
+                    </template>
+                    <el-menu-item-group>
+                        <el-menu-item v-for="childrenMenuNote in menuNote.children" :index="childrenMenuNote.index">
+                            {{childrenMenuNote.title}}
+                        </el-menu-item>
+                    </el-menu-item-group>
+                </el-submenu>
+            </div>
+
+
+            <!--  <el-menu-item index="0">
+                  <i class="el-icon-s-home menu-icon"></i>
+                  <span slot="title" class="menu-title">{{menuNoteMap.get("0").title}}</span>
+              </el-menu-item>
+
+              <el-submenu index="1">
+                  <template slot="title">
+                      <i class="el-icon-s-custom menu-icon"></i>
+                      <span slot="title" class="menu-title">{{menuNoteMap.get("1").title}}</span>
+                  </template>
+                  <el-menu-item-group>
+                      <el-menu-item index="1-0">{{menuNoteMap.get("1-0").title}}</el-menu-item>
+                      <el-menu-item index="1-1">{{menuNoteMap.get("1-1").title}}</el-menu-item>
+                  </el-menu-item-group>
+              </el-submenu>
+
+              <el-submenu index="2">
+                  <template slot="title">
+                      <i class="el-icon-lock menu-icon"></i>
+                      <span slot="title" class="menu-title">{{menuNoteMap.get("2").title}}</span>
+                  </template>
+                  <el-menu-item-group>
+                      <el-menu-item index="2-0">{{menuNoteMap.get("2-0").title}}</el-menu-item>
+                      <el-menu-item index="2-1">{{menuNoteMap.get("2-1").title}}</el-menu-item>
+                      <el-menu-item index="2-2">{{menuNoteMap.get("2-2").title}}</el-menu-item>
+                  </el-menu-item-group>
+              </el-submenu>-->
+
         </el-menu>
         <!--侧边菜单End-->
 
@@ -109,6 +145,7 @@
 
 <script>
     import StatusButton from '@/components/StatusButton.vue';
+    import {menuNotes, menuNoteMap} from '@/views/frame/menu_notes';
 
 
     export default {
@@ -124,13 +161,15 @@
         ,
         data() {
             return {
-                logoUrl: require('../assets/images/logo.png'),
+                logoUrl: require('../assets/images/logo_bar.jpg'),
                 isCollapse: false,
                 currentTabName: null,
                 //缓存TabView的视图数据
                 tabViewDataList: [],
                 //当前选中的菜单队列数据
-                menuDataQueue: []
+                menuDataQueue: [],
+                menuNotes: menuNotes,
+                menuNoteMap: menuNoteMap
             }
         }
         ,
@@ -150,7 +189,8 @@
                 });
                 if (isAddable) {
                     this.addTabView(menuData);
-                } else {
+                }
+                else {
                     this.currentTabName = menuData.viewName;
                 }
             }
@@ -186,7 +226,7 @@
             getMenuDataQueue: function (index) {
                 let indexs = index.split("-");
                 let menuDataQueue = [];
-                let menuTree = this.menuTree;
+                let menuTree = this.menuNotes;
                 indexs.forEach((value) => {
                     let menuData = menuTree[Number(value)];
                     menuDataQueue.push(menuData);
@@ -197,20 +237,7 @@
             }
         }
         ,
-        computed: {
-            menuTree() {
-                return [
-                    {index: "0", viewName: "home_view", title: "主页", children: null},
-                    {
-                        index: "1", viewName: null, title: "用户管理", children:
-                            [
-                                {index: "1-0", viewName: "admin_user_view", title: "管理员账户管理", children: null},
-                                {index: "1-1", viewName: "registered_user_view", title: "普通用户管理", children: null}
-                            ]
-                    }
-                ];
-            }
-        }
+        computed: {}
     }
     ;
 </script>

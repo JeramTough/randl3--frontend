@@ -15,12 +15,14 @@ const routePaths = [
                 path: 'Layout',
                 components: {
                     //主框架的某个碎片区域
-                    user_fragment:() => import(/* webpackChunkName: "about" */ '@/views/frame/UserFragment.vue'),
+                    user_fragment: () => import(/* webpackChunkName: "about" */ '@/views/frame/UserFragment.vue'),
                     //菜单模块
                     home_view: () => import(/* webpackChunkName: "about" */ '@/views/module/home/HomeView.vue'),
                     admin_user_view: () => import(/* webpackChunkName: "about" */ '@/views/module/user/AdminUserView.vue'),
-                    registered_user_view: () => import(/* webpackChunkName: "about" */ '@/views/module/user/RegisteredUserView.vue')
-
+                    registered_user_view: () => import(/* webpackChunkName: "about" */ '@/views/module/user/RegisteredUserView.vue'),
+                    interface_view: () => import(/* webpackChunkName: "about" */ '@/views/module/permission/InterfaceView.vue'),
+                    role_view: () => import(/* webpackChunkName: "about" */ '@/views/module/permission/RoleView.vue'),
+                    allocation_view: () => import(/* webpackChunkName: "about" */ '@/views/module/permission/AllocationView.vue')
                 },
                 //component: () => import(/* webpackChunkName: "about" */ '@/views/TestView.vue')
             }
