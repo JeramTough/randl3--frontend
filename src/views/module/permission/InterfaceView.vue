@@ -6,8 +6,8 @@
             <el-col :span="18">
                 <div>
                     <el-form :inline="true" :model="searchParameter" class="demo-form-inline">
-                        <el-form-item label="按搜索">
-                            <el-input v-model="searchParameter.keyword" placeholder="ID,接口路径值"></el-input>
+                        <el-form-item label="模糊搜索">
+                            <el-input v-model="searchParameter.keyword" placeholder="ID,接口路径值,描述"></el-input>
                         </el-form-item>
                         <el-form-item>
                             <el-button type="primary" icon="el-icon-search" @click="queryByKeyword">查询</el-button>
@@ -170,9 +170,9 @@
             queryByKeyword() {
                 let Vue = this;
                 if (this.searchParameter.keyword.length > 0) {
-                    apiHandler.getAdminUserApi().byKeyword({keyword: this.searchParameter.keyword}, (data) => {
+                    apiHandler.getApiInfoApi().byKeyword({keyword: this.searchParameter.keyword}, (data) => {
                         if (data.isSuccessful) {
-                            Vue._data.tableData = [data.responseBody];
+                            Vue._data.tableData = data.responseBody;
                         }
                         else {
                             Vue.$messageUtil.error(data.responseBody);

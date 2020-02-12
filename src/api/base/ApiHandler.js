@@ -12,6 +12,7 @@ let apiHandler = {
     getApiInfoApi: function () {
         return ApiInfoApi;
     }
+
 };
 
 export default apiHandler;
