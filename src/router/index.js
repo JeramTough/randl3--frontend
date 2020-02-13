@@ -5,9 +5,19 @@ Vue.use(VueRouter);
 
 const routePaths = [
     {
+        path: "/adminLogin",
+        component: () => import(/* webpackChunkName: "about" */ '@/views/module/randl/AdminUserLoginView.vue')
+    }
+    ,
+    {
+        path: "/launcher",
+        component: () => import(/* webpackChunkName: "about" */ '@/views/module/randl/launcherView.vue'),
+    }
+    ,
+    {
         path: "/",
         component: () => import(/* webpackChunkName: "about" */ '@/views/FrameView.vue'),
-        redirect: 'Layout',
+        redirect: '/adminLogin',
         children: [
             {
                 // 当 /user/:id/profile 匹配成功，
@@ -27,10 +37,6 @@ const routePaths = [
                 //component: () => import(/* webpackChunkName: "about" */ '@/views/TestView.vue')
             }
         ]
-    },
-    {
-        path: "/adminLogin",
-        component: () => import(/* webpackChunkName: "about" */ '@/views/module/randl/AdminUserLoginView.vue')
     },
     {
         path: "/test",

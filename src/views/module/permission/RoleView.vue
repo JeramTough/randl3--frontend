@@ -202,13 +202,13 @@
             }
             ,
             updateRow(index, rows) {
-                this.dialogTitle = "修改接口信息";
+                this.dialogTitle = "修改角色信息";
                 this.dialogVisible = true;
                 this.selectedRole = rows[index];
             }
             ,
             addRow() {
-                this.dialogTitle = "添加新接口";
+                this.dialogTitle = "添加新角色";
                 this.dialogVisible = true;
                 this.selectedRole = null;
             }
