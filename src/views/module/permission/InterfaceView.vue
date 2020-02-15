@@ -186,18 +186,20 @@
 
             },
             deleteRow(index, rows) {
-                let fid = rows[index].fid;
-                this.isLoading = true;
-                let Vue = this;
-                apiHandler.getApiInfoApi().remove({fid: fid}, (data) => {
-                    if (data.isSuccessful) {
-                        Vue.$messageUtil.success(data.responseBody);
-                        rows.splice(index, 1);
-                    }
-                    else {
-                        Vue.$messageUtil.error(data.responseBody);
-                    }
-                    this.isLoading = false;
+                this.$messageUtil.sureDialog("是否删除该接口？",()=>{
+                    let fid = rows[index].fid;
+                    this.isLoading = true;
+                    let Vue = this;
+                    apiHandler.getApiInfoApi().remove({fid: fid}, (data) => {
+                        if (data.isSuccessful) {
+                            Vue.$messageUtil.success(data.responseBody);
+                            rows.splice(index, 1);
+                        }
+                        else {
+                            Vue.$messageUtil.error(data.responseBody);
+                        }
+                        this.isLoading = false;
+                    });
                 });
             }
             ,
