@@ -5,18 +5,27 @@ Vue.use(VueRouter);
 
 const routePaths = [
     {
+        path: "*",
+        component: () => import( '@/views/module/error/Error404View.vue')
+    },
+    {
         path: "/adminLogin",
-        component: () => import(/* webpackChunkName: "about" */ '@/views/module/randl/AdminUserLoginView.vue')
+        component: () => import( '@/views/module/randl/AdminUserLoginView.vue')
     }
     ,
     {
-        path: "/launcher",
-        component: () => import(/* webpackChunkName: "about" */ '@/views/module/randl/launcherView.vue'),
+        path: "/userLogin",
+        component: () => import( '@/views/module/randl/UserLoginView.vue')
+    }
+    ,
+    {
+        path: "/userRegister",
+        component: () => import( '@/views/module/randl/UserRegisterView.vue'),
     }
     ,
     {
         path: "/",
-        component: () => import(/* webpackChunkName: "about" */ '@/views/FrameView.vue'),
+        component: () => import( '@/views/FrameView.vue'),
         redirect: '/adminLogin',
         children: [
             {
@@ -25,22 +34,22 @@ const routePaths = [
                 path: 'Layout',
                 components: {
                     //主框架的某个碎片区域
-                    user_fragment: () => import(/* webpackChunkName: "about" */ '@/views/frame/UserFragment.vue'),
+                    user_fragment: () => import('@/views/frame/UserFragment.vue'),
                     //菜单模块
-                    home_view: () => import(/* webpackChunkName: "about" */ '@/views/module/home/HomeView.vue'),
-                    admin_user_view: () => import(/* webpackChunkName: "about" */ '@/views/module/user/AdminUserView.vue'),
-                    registered_user_view: () => import(/* webpackChunkName: "about" */ '@/views/module/user/RegisteredUserView.vue'),
-                    interface_view: () => import(/* webpackChunkName: "about" */ '@/views/module/permission/InterfaceView.vue'),
-                    role_view: () => import(/* webpackChunkName: "about" */ '@/views/module/permission/RoleView.vue'),
-                    allocation_view: () => import(/* webpackChunkName: "about" */ '@/views/module/permission/AllocationView.vue')
+                    home_view: () => import('@/views/module/home/HomeView.vue'),
+                    admin_user_view: () => import('@/views/module/user/ManageAdminView.vue'),
+                    registered_user_view: () => import('@/views/module/user/ManageRegisteredView.vue'),
+                    interface_view: () => import('@/views/module/permission/InterfaceView.vue'),
+                    role_view: () => import('@/views/module/permission/RoleView.vue'),
+                    allocation_view: () => import('@/views/module/permission/AllocationView.vue')
                 },
-                //component: () => import(/* webpackChunkName: "about" */ '@/views/TestView.vue')
+                //component: () => import('@/views/TestView.vue')
             }
         ]
     },
     {
         path: "/test",
-        component: () => import(/* webpackChunkName: "about" */ '@/views/TestView.vue')
+        component: () => import('@/views/TestView.vue')
     }
 ];
 

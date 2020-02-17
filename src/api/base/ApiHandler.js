@@ -1,22 +1,31 @@
-import AdminUserApi from "@/api/AdminUserApi";
-import RoleApi from "@/api/RoleApi";
-import ApiInfoApi from "@/api/ApiInfoApi";
-import PermissionApi from "@/api/PermissionApi";
+import adminUserApi from "@/api/AdminUserApi";
+import roleApi from "@/api/RoleApi";
+import apiInfoApi from "@/api/ApiInfoApi";
+import permissionApi from "@/api/PermissionApi";
+import verificationCodeApi from "@/api/VerificationCodeApi";
+import registeredUserApi from "@/api/RegisteredUserApi";
 
 let apiHandler = {
     getAdminUserApi: function () {
-        return AdminUserApi;
+        return adminUserApi;
     },
     getRoleApi: function () {
-        return RoleApi;
+        return roleApi;
     },
     getApiInfoApi: function () {
-        return ApiInfoApi;
+        return apiInfoApi;
     },
     getPermissionApi: function () {
-        return PermissionApi;
+        return permissionApi;
     }
-
+    ,
+    getVerificationCodeApi: function () {
+        return verificationCodeApi;
+    }
+    ,
+    getRegisteredUserApi: function () {
+        return registeredUserApi;
+    }
 };
 
 export default apiHandler;

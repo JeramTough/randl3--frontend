@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import {
     Message,
-    MessageBox
+    MessageBox,
+    Notification
 } from 'element-ui'
 
 export default {
@@ -12,8 +13,22 @@ export default {
             type: 'success'
         });
     },
+    success1: function (message) {
+        Notification({
+            title: '成功',
+            message: message,
+            type: 'success'
+        });
+    },
     error: function (message) {
         Message({
+            message: message,
+            type: 'error'
+        });
+    },
+    error1: function (message) {
+        Notification({
+            title: '失败',
             message: message,
             type: 'error'
         });

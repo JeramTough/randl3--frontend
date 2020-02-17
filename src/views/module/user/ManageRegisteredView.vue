@@ -18,7 +18,6 @@
             <el-col :span="6">
                 <el-button type="primary" icon="el-icon-refresh" size="small" round @click="obtainTableData">刷新
                 </el-button>
-                <el-button type="primary" icon="el-icon-plus" size="small" round @click="addRow">新增</el-button>
             </el-col>
         </el-row>
 
@@ -30,7 +29,7 @@
             <el-table-column
                     fixed
                     prop="username"
-                    label="帐号名"
+                    label="用户名"
                     width="150">
             </el-table-column>
             <el-table-column
@@ -76,6 +75,12 @@
                             size="small">
                         修改
                     </el-button>
+                    <el-button
+                            @click.native.prevent="updateRow(scope.$index, tableData)"
+                            type="text"
+                            size="small">
+                        编辑资料
+                    </el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -106,6 +111,7 @@
     import AUdialog from "@/components/AddOrUpdateAdminUserDialog.vue";
 
     export default {
+        name: "ManageRegisteredUserView",
         components: {
             "my-au-dialog": AUdialog
         },
