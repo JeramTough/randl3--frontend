@@ -1,23 +1,20 @@
 <template>
     <div>
         用户登录
+        {{loginForm.credential}}
+        {{loginForm.password}}
     </div>
 </template>
 
 <script>
 
-    const srcImages = {
-        mIcon: require("@/assets/images/manager_icon.png")
-    };
-
     export default {
-        name: "AdminUserLoginView",
+        name: "UserLoginView",
         data() {
             return {
-                srcImages,
-                user: {
-                    username: 'zhangsan',
-                    password: '123',
+                loginForm: {
+                    credential: this.$route.query.phoneOrEmail === undefined ? null : this.$route.query.phoneOrEmail,
+                    password: this.$route.query.password === undefined ? null : this.$route.query.password,
                 }
             }
         },

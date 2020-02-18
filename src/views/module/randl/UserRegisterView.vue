@@ -60,6 +60,29 @@
                         </el-form>
                     </div>
 
+                    <!-- 第三步视图-->
+                    <div v-if="steps===3">
+                        <el-input v-model.lazy="registerForm.password" autocomplete="off"
+                                  placeholder="密码" @input="100"
+                                  maxlength="16"
+                                  show-password
+                                  type="password"></el-input>
+                        <el-input v-model.lazy="registerForm.repeatedPassword" autocomplete="off"
+                                  placeholder="确定密码" @input="100"
+                                  style="margin-bottom: 20px;"
+                                  maxlength="16"
+                                  show-password
+                                  type="password"></el-input>
+                    </div>
+
+                    <!-- 第三步视图-->
+                    <div v-if="steps===4">
+                        <div v-if="registeredUser!=null">
+                            <i style="font-size: 100px;color: #00FF00;" class="el-icon-circle-check"></i>
+                            <div style="margin-bottom: 20px;">用户【{{registeredUser.account}}】注册成功！</div>
+                        </div>
+                    </div>
+
                     <!--下一步按钮-->
                     <div>
                         <el-button type="primary" @click="nextStep" :loading="isDoing" round>
@@ -73,10 +96,14 @@
         <el-row type="flex" align="middle" style="margin-top: 50px;text-align: left">
             <el-col :span="24">
                 <el-steps :active="steps" style="margin-left: 10%;margin-right: 10%">
-                    <el-step title="步骤 1" description="输入注册方式"></el-step>
-                    <el-step title="步骤 2" description="校验验证码"></el-step>
-                    <el-step title="步骤 3" description="设置密码"></el-step>
-                    <el-step title="步骤 4" description="完成"></el-step>
+                    <el-step title="步骤 1" description="输入注册方式"
+                             @click.native.prevent="steps=1"></el-step>
+                    <el-step title="步骤 2" description="校验验证码"
+                             @click.native.prevent="steps=2"></el-step>
+                    <el-step title="步骤 3" description="设置密码"
+                             @click.native.prevent="steps=3"></el-step>
+                    <el-step title="步骤 4" description="完成"
+                             @click.native.prevent="steps=4"></el-step>
                 </el-steps>
             </el-col>
         </el-row>
@@ -98,11 +125,13 @@
                     phoneNumber: null,
                     emailAddress: null,
                     verificationCode: null,
-                    phoneOrEmail: null
+                    phoneOrEmail: null,
+                    password: null,
+                    repeatedPassword: null
                 },
                 sendVerificationCodeText: "发送验证码",
                 sendVerificationCodeButtonDisable: false,
-
+                registeredUser: null
 
             }
         },
@@ -180,6 +209,53 @@
 
                         break;
                     case 3:
+                        if (this.registerForm.password == null || this.registerForm.password.length > 16 || this.registerForm.password.length < 8) {
+                            this.$messageUtil.error("密码格式不正确！允许长度范围在8-16位的非空白任意字符");
+                            return;
+                        }
+                        if (this.registerForm.password !== this.registerForm.repeatedPassword) {
+                            this.$messageUtil.error("两次密码不一致！");
+                            return;
+                        }
+                        apiHandler.getRegisteredUserApi().verifyPassword({
+                            password: this.registerForm.password,
+                            repeatedPassword: this.registerForm.repeatedPassword
+                        }, (data) => {
+                            if (data.isSuccessful) {
+                                Vue.$messageUtil.success1(data.responseBody);
+                                apiHandler.getRegisteredUserApi().register(null, (data) => {
+                                    if (data.isSuccessful) {
+                                        Vue._data.registeredUser = data.responseBody;
+                                        Vue._data.steps++;
+                                    }
+                                    else {
+                                        Vue.$messageUtil.error(data.responseBody);
+                                    }
+                                    Vue._data.isDoing = false;
+                                });
+                            }
+                            else {
+                                Vue.$messageUtil.error(data.responseBody);
+                                Vue._data.isDoing = false;
+                            }
+
+                        });
+                        this.isDoing = true;
+
+                        break;
+                    case 4:
+                        if (this.registeredUser == null) {
+                            Vue.$messageUtil.error("注册未成功！");
+                            return;
+                        }
+
+                        this.$router.push({
+                            path: 'userLogin', query: {
+                                phoneOrEmail: this.registerForm.phoneOrEmail,
+                                password: this.registerForm.password
+                            }
+                        });
+
                         break;
                     default:
                         break;
@@ -188,12 +264,6 @@
             ,
             sendVerificationCode() {
                 let Vue = this;
-                /* if (this.registerForm.verificationCode == null || this.registerForm.verificationCode.length === 0) {
-                     this.$messageUtil.error("验证码未填写");
-                     return;
-                 }
-                 this.sendVerificationCodeButtonDisable=true;*/
-
                 if (!this.sendVerificationCodeButtonDisable) {
                     this.isDoing = true;
                     apiHandler.getVerificationCodeApi().send(
@@ -238,8 +308,8 @@
 
     .el-card {
         margin-top: 20%;
-        margin-left: 20%;
-        margin-right: 20%;
+        margin-left: 30%;
+        margin-right: 30%;
     }
 
     .title {
