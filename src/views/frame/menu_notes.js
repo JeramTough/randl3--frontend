@@ -10,20 +10,50 @@ const menuNotes = [
     },
     {
         index: "1",
+        iconClass: "el-icon-lock menu-icon",
+        viewName: null,
+        title: "权限管理",
+        children:
+            [
+                {
+                    index: "1-0",
+                    iconClass: "el-icon-s-home menu-icon",
+                    viewName: "interface_view",
+                    title: "接口管理",
+                    children: null
+                },
+                {
+                    index: "1-1",
+                    iconClass: "el-icon-s-home menu-icon",
+                    viewName: "role_view",
+                    title: "角色管理",
+                    children: null
+                },
+                {
+                    index: "1-2",
+                    iconClass: "el-icon-s-home menu-icon",
+                    viewName: "allocation_view",
+                    title: "权限分配",
+                    children: null
+                }
+            ]
+    },
+    {
+        index: "2",
         iconClass: "el-icon-s-custom menu-icon",
         viewName: null,
         title: "用户管理",
         children:
             [
                 {
-                    index: "1-0",
+                    index: "2-0",
                     iconClass: "el-icon-s-home menu-icon",
                     viewName: "admin_user_view",
                     title: "管理员账户管理",
                     children: null
                 },
                 {
-                    index: "1-1",
+                    index: "2-1",
                     iconClass: "el-icon-s-custom menu-icon",
                     viewName: "registered_user_view",
                     title: "普通用户管理",
@@ -31,36 +61,6 @@ const menuNotes = [
                 }
             ]
     },
-    {
-        index: "2",
-        iconClass: "el-icon-lock menu-icon",
-        viewName: null,
-        title: "权限管理",
-        children:
-            [
-                {
-                    index: "2-0",
-                    iconClass: "el-icon-s-home menu-icon",
-                    viewName: "interface_view",
-                    title: "接口管理",
-                    children: null
-                },
-                {
-                    index: "2-1",
-                    iconClass: "el-icon-s-home menu-icon",
-                    viewName: "role_view",
-                    title: "角色管理",
-                    children: null
-                },
-                {
-                    index: "2-2",
-                    iconClass: "el-icon-s-home menu-icon",
-                    viewName: "allocation_view",
-                    title: "权限分配",
-                    children: null
-                }
-            ]
-    }
 ];
 
 

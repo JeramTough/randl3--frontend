@@ -4,6 +4,8 @@ import apiInfoApi from "@/api/ApiInfoApi";
 import permissionApi from "@/api/PermissionApi";
 import verificationCodeApi from "@/api/VerificationCodeApi";
 import registeredUserApi from "@/api/RegisteredUserApi";
+import personalInfoApi from "@/api/PersonalInfoApi";
+import surfaceImageApi from "@/api/SurfaceImageApi";
 
 let apiHandler = {
     getAdminUserApi: function () {
@@ -25,6 +27,14 @@ let apiHandler = {
     ,
     getRegisteredUserApi: function () {
         return registeredUserApi;
+    }
+    ,
+    getPersonalInfoApi: function () {
+        return personalInfoApi;
+    }
+    ,
+    getSurfaceImageApi: function () {
+        return surfaceImageApi;
     }
 };
 

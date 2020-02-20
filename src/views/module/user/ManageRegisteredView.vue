@@ -28,9 +28,14 @@
                 max-height="350">
             <el-table-column
                     fixed
-                    prop="username"
-                    label="用户名"
-                    width="150">
+                    prop="uid"
+                    label="ID"
+                    width="50">
+            </el-table-column>
+            <el-table-column
+                    prop="account"
+                    label="帐号名"
+                    width="120">
             </el-table-column>
             <el-table-column
                     prop="phoneNumber"
@@ -46,11 +51,6 @@
                     prop="registrationTime"
                     label="注册时间"
                     width="200">
-            </el-table-column>
-            <el-table-column
-                    prop="role.description"
-                    label="角色名"
-                    width="120">
             </el-table-column>
             <el-table-column
                     prop="enabled"
@@ -76,7 +76,7 @@
                         修改
                     </el-button>
                     <el-button
-                            @click.native.prevent="updateRow(scope.$index, tableData)"
+                            @click.native.prevent="updateRowForPersonalInfo(scope.$index, tableData)"
                             type="text"
                             size="small">
                         编辑资料
@@ -100,20 +100,24 @@
         <el-divider/>
 
         <!--对话框控件-->
-        <my-au-dialog :data-source="selectedAdminUser" :visible.sync="dialogVisible" :title="dialogTitle"
+        <my-au-dialog :data-source="selectedEntity" :visible.sync="dialogVisible" :title="dialogTitle"
                       v-on:done="onDialogDone"/>
+
+        <my-up-dialog :data-source="selectedEntity" :visible.sync="dialogVisible2" :title="'编辑用户个人信息'"/>
     </div>
 
 </template>
 
 <script>
     import apiHandler from "@/api/base/ApiHandler";
-    import AUdialog from "@/components/AddOrUpdateAdminUserDialog.vue";
+    import AUdialog from "@/components/UpdateRegisteredUserDialog.vue";
+    import UPdialog from "@/components/UpdatePersonalInfoDialog.vue";
 
     export default {
         name: "ManageRegisteredUserView",
         components: {
-            "my-au-dialog": AUdialog
+            "my-au-dialog": AUdialog,
+            "my-up-dialog":UPdialog
         },
         mounted: function () {
             this.obtainTableData();
@@ -127,6 +131,7 @@
                 isLoading: false,
 
                 dialogVisible: false,
+                dialogVisible2:false,
 
                 dialogTitle: "",
                 /**
@@ -145,7 +150,7 @@
                 searchParameter: {
                     keyword: ''
                 },
-                selectedAdminUser: null
+                selectedEntity: null
             }
         }
         ,
@@ -162,7 +167,7 @@
             obtainTableData() {
                 this.isLoading = true;
                 let Vue = this;
-                apiHandler.getAdminUserApi().getByPage({
+                apiHandler.getRegisteredUserApi().getByPage({
                     index: this.currentPageIndex,
                     size: this.currentPageSize
                 }, function (data) {
@@ -176,10 +181,7 @@
 
                     }
                     else {
-                        Vue.$message({
-                            message: data.responseBody,
-                            type: 'error'
-                        });
+                        Vue.$messageUtil.error(data.responseBody);
                     }
                 });
             },
@@ -210,45 +212,47 @@
             },
             deleteRow(index, rows) {
                 let uid = rows[index].uid;
-                this.isLoading = true;
                 let Vue = this;
-                apiHandler.getAdminUserApi().remove({uid: uid}, (data) => {
-                    if (data.isSuccessful) {
-                        Vue.$messageUtil.success(data.responseBody);
-                        rows.splice(index, 1);
-                    }
-                    else {
-                        Vue.$messageUtil.error(data.responseBody);
-                    }
-                    this.isLoading = false;
+                this.$messageUtil.sureDialog("是否要删除该名注册用户" +
+                    "【" + rows[index].account + "】", () => {
+                    this.isLoading = true;
+                    apiHandler.getRegisteredUserApi().remove({uid: uid}, (data) => {
+                        if (data.isSuccessful) {
+                            Vue.$messageUtil.success(data.responseBody);
+                            rows.splice(index, 1);
+                        }
+                        else {
+                            Vue.$messageUtil.error(data.responseBody);
+                        }
+                        this.isLoading = false;
+                    });
                 });
             }
             ,
             updateRow(index, rows) {
                 this.dialogTitle = "修改账号信息";
+                this.selectedEntity = rows[index];
                 this.dialogVisible = true;
-                this.selectedAdminUser = rows[index];
+            }
+            ,
+            updateRowForPersonalInfo(index, rows) {
+                this.selectedEntity = rows[index];
+                this.dialogVisible2 = true;
             }
             ,
             addRow() {
                 this.dialogTitle = "添加新账号";
                 this.dialogVisible = true;
-                this.selectedAdminUser = null;
+                this.selectedEntity = null;
             }
             ,
-            onDialogDone(editedSystemUser) {
-
-                if (editedSystemUser.uid == null) {
-                    //新增的情况下
-                    this.obtainTableData();
-                }
-                else {
-                    //更新的情况下
-                    this.selectedAdminUser.enabled = editedSystemUser.accountStatus === 1 ? '是' : '否';
-                    Object.keys(editedSystemUser).forEach(key => {
-                        this.selectedAdminUser[key] = editedSystemUser[key];
-                    });
-                }
+            onDialogDone(editedRegisteredUser) {
+                //更新的情况下
+                this.selectedEntity=editedRegisteredUser;
+                this.selectedEntity.enabled = editedRegisteredUser.accountStatus === 1 ? '是' : '否';
+                /*Object.keys(editedRegisteredUser).forEach(key => {
+                    this.selectedEntity[key] = editedRegisteredUser[key];
+                });*/
             }
         },
     }

@@ -207,15 +207,18 @@
                 let uid = rows[index].uid;
                 this.isLoading = true;
                 let Vue = this;
-                apiHandler.getAdminUserApi().remove({uid: uid}, (data) => {
-                    if (data.isSuccessful) {
-                        Vue.$messageUtil.success(data.responseBody);
-                        rows.splice(index, 1);
-                    }
-                    else {
-                        Vue.$messageUtil.error(data.responseBody);
-                    }
-                    this.isLoading = false;
+                this.$messageUtil.sureDialog("是否要删除该管理员账号【" +
+                    rows[index].username + "】", () => {
+                    apiHandler.getAdminUserApi().remove({uid: uid}, (data) => {
+                        if (data.isSuccessful) {
+                            Vue.$messageUtil.success(data.responseBody);
+                            rows.splice(index, 1);
+                        }
+                        else {
+                            Vue.$messageUtil.error(data.responseBody);
+                        }
+                        this.isLoading = false;
+                    });
                 });
             }
             ,
