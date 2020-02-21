@@ -141,6 +141,7 @@
                 isSurfaceImageChanged: false,
                 formData: {
                     fid: 1,
+                    uid: 0,
                     surfaceImage: null,
                     nickname: "zhuzhu",
                     age: 15,
@@ -164,8 +165,7 @@
                 let Vue = this;
                 file = file = file.raw;
 
-                this.isSurfaceImageChanged=true;
-                this.onFormChanged();
+                this.isSurfaceImageChanged = true;
 
                 const isJPG = file.type === 'image/jpeg';
                 const isPNG = file.type === 'image/png';
@@ -193,8 +193,8 @@
             onOpened() {
                 let Vue = this;
                 this.isLoading = true;
-                this.isSurfaceImageChanged=false;
-                this.isFormChanged=false;
+                this.isSurfaceImageChanged = false;
+                this.isFormChanged = false;
 
                 apiHandler.getPersonalInfoApi().getOneByUid({uid: this.dataSource.uid}, (data) => {
                     if (data.isSuccessful) {
@@ -222,13 +222,16 @@
             onSubmit() {
                 let Vue = this;
                 this.isProcessingOption = true;
+
                 if (this.isSurfaceImageChanged) {
                     let data = {
+                        uid: Vue._data.formData.uid,
                         surfaceImage: Vue._data.formData.surfaceImage
                     };
-                    apiHandler.getSurfaceImageApi().upload(data, (data) => {
+                    apiHandler.getSurfaceImageApi().update(data, (data) => {
                         if (data.isSuccessful) {
-                            Vue.updatePersonalInfo(data.responseBody);
+                            Vue.$messageUtil.success1(data.responseBody);
+                            Vue.updatePersonalInfo();
                         }
                         else {
                             Vue.$messageUtil.error(data.responseBody);
@@ -237,37 +240,30 @@
                     });
                 }
                 else {
-                    Vue.updatePersonalInfo(null);
+                    Vue.updatePersonalInfo();
                 }
 
             }
             ,
-            updatePersonalInfo: function (surfaceImage) {
+            updatePersonalInfo: function () {
                 let Vue = this;
 
-                if (surfaceImage == null) {
-                    this.formData.surfaceImageId = null;
+                if (this.isFormChanged) {
+                    apiHandler.getPersonalInfoApi().update(this.formData, (data) => {
+                        if (data.isSuccessful) {
+                            Vue.$messageUtil.success1(data.responseBody);
+                            Vue.$emit('update:visible', false);
+                        }
+                        else {
+                            Vue.$messageUtil.error(data.responseBody);
+                        }
+                        Vue._data.isProcessingOption = false;
+                    });
                 }
                 else {
-                    this.formData.surfaceImageId = surfaceImage.fid;
+                    Vue._data.isProcessingOption = false;
+                    Vue.$emit('update:visible', false);
                 }
-
-               if (this.isFormChanged){
-                   apiHandler.getPersonalInfoApi().update(this.formData, (data) => {
-                       if (data.isSuccessful) {
-                           Vue.$messageUtil.success(data.responseBody);
-                           Vue.$emit('update:visible', false);
-                       }
-                       else {
-                           Vue.$messageUtil.error(data.responseBody);
-                       }
-                       Vue._data.isProcessingOption = false;
-                   });
-               }
-               else{
-                   Vue._data.isProcessingOption = false;
-                   Vue.$emit('update:visible', false);
-               }
 
             }
         }
