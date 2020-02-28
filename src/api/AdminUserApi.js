@@ -21,6 +21,9 @@ export default {
     update(data, caller) {
         randl2HttpClient.post(BASE + "/update", data, caller);
     },
+    updateCurrent(data, caller) {
+        randl2HttpClient.post(BASE + "/updateCurrent", data, caller);
+    },
     byKeyword(params, caller) {
         randl2HttpClient.get(BASE + "/byKeyword", params, caller);
     }

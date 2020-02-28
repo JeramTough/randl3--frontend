@@ -32,18 +32,28 @@
                 </div>
             </el-col>
         </el-row>
+
+        <!--对话框控件-->
+        <my-update-dialog :visible.sync="dialogVisible"/>
+
     </div>
 </template>
 
 <script>
+    import UpateAdminDialog from "@/components/UpdateAdminUserDialog.vue";
+
     export default {
         name: "UserFrameView",
+        components: {
+            "my-update-dialog": UpateAdminDialog
+        },
         data: function () {
-            return {}
+            return {
+                dialogVisible: false,
+            }
         },
         computed: {
             systemUser: function () {
-
                 return this.$store.state.systemUser;
             }
         },
@@ -52,6 +62,7 @@
 
                 switch (Number(command)) {
                     case 0:
+                        this.dialogVisible = true;
                         break;
                     case 1:
                         this.$router.push({path: '/adminLogin'});

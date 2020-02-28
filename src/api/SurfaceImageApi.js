@@ -13,5 +13,8 @@ export default {
     upload(data, caller) {
         randl2HttpClient.post(BASE + "/upload", data, caller);
     },
+    updateCurrentAdmin(data, caller) {
+        randl2HttpClient.post(BASE + "/updateCurrentAdmin", data, caller);
+    },
 
 };
