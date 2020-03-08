@@ -4,39 +4,19 @@
             <el-col :span="24">
                 <el-card class="box-card" shadow="always" style="background-color: rgba(211,255,228,0.71);">
                     <div slot="header" class="clearfix">
-                        <span class="title">用户注册</span>
-                        <router-link style="float: right; padding: 3px 0;color: #06bb28" to="userLogin">去登录</router-link>
+                        <span class="title">找回密码</span>
+                        <router-link style="float: right; padding: 3px 0;color: #06bb28" to="userLogin">去登录
+                        </router-link>
                     </div>
 
                     <!--第一步视图-->
                     <div v-if="steps===1">
-                        <div v-if="registerForm.way===1">
-                            <div>
-                                <el-input
-                                        placeholder="请输入手机号码进行注册"
-                                        v-model="registerForm.phoneNumber"
-                                        clearable>
-                                </el-input>
-                            </div>
-                            <div>
-                                <el-button type="text" @click.native.prevent="registerForm.way=2">
-                                    没有手机，用<span style="font-size: large;font-weight: bold">邮箱</span>注册？
-                                </el-button>
-                            </div>
-                        </div>
-                        <div v-if="registerForm.way===2">
-                            <div>
-                                <el-input
-                                        placeholder="请输入邮箱地址进行注册"
-                                        v-model="registerForm.emailAddress"
-                                        clearable>
-                                </el-input>
-                            </div>
-                            <div>
-                                <el-button type="text" @click.native.prevent="registerForm.way=1">
-                                    没有邮箱，用<span style="font-size: large;font-weight: bold">手机</span>注册？
-                                </el-button>
-                            </div>
+                        <div>
+                            <el-input
+                                    placeholder="请输入手机号码或者邮箱"
+                                    v-model="registerForm.phoneOrEmail"
+                                    clearable>
+                            </el-input>
                         </div>
                     </div>
 
@@ -84,7 +64,7 @@
                     </div>
 
                     <!--下一步按钮-->
-                    <div>
+                    <div style="margin-top: 20px;">
                         <el-button type="primary" @click="nextStep" :loading="isDoing" round>
                             {{optionText}}
                         </el-button>
@@ -122,10 +102,8 @@
                 isDoing: false,
                 registerForm: {
                     way: 1,
-                    phoneNumber: null,
-                    emailAddress: null,
-                    verificationCode: null,
                     phoneOrEmail: null,
+                    verificationCode: null,
                     password: null,
                     repeatedPassword: null
                 },
@@ -301,13 +279,13 @@
 <style scoped>
     #body {
         background-image: url("../../../assets/images/user_randl_bg1.jpg");
-        height: 1000px;
+        height: 600px;
         background-size: cover;
 
     }
 
     .el-card {
-        margin-top: 20%;
+        margin-top: 10%;
         margin-left: 30%;
         margin-right: 30%;
     }

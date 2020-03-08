@@ -24,6 +24,11 @@ const routePaths = [
     }
     ,
     {
+        path: "/userForget",
+        component: () => import( '@/views/module/randl/UserForgetView.vue'),
+    }
+    ,
+    {
         path: "/",
         component: () => import( '@/views/FrameView.vue'),
         redirect: '/adminLogin',
