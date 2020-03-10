@@ -7,11 +7,17 @@ export default {
     verifyPhoneOrEmailForNew(data, caller) {
         randl2HttpClient.post(BASE + "/verify/phoneOrEmailForNew", data, caller);
     },
+    verifyPhoneOrEmailByForget(data, caller) {
+        randl2HttpClient.post(BASE + "/verify/phoneOrEmailByForget", data, caller);
+    },
     verifyPassword(data, caller) {
         randl2HttpClient.post(BASE + "/verify/password", data, caller);
     },
     register(params, caller) {
         randl2HttpClient.postWithParams(BASE + "/register", params, caller);
+    },
+    reset(params, caller) {
+        randl2HttpClient.postWithParams(BASE + "/reset", params, caller);
     },
     update(data, caller) {
         randl2HttpClient.post(BASE + "/update", data, caller);

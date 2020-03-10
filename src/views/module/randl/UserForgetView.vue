@@ -131,33 +131,28 @@
                 switch (this.steps) {
                     case 1:
                         var isFormatRight = false;
-                        if (this.registerForm.way === 1) {
-                            if (jsValidate.validatePhone(this.registerForm.phoneNumber)) {
-                                isFormatRight = true;
-                                this.registerForm.phoneOrEmail = this.registerForm.phoneNumber;
-                            }
-                            else {
-                                this.$messageUtil.error("手机号码格式错误");
-                            }
+
+                        if (jsValidate.validatePhone(this.registerForm.phoneOrEmail)) {
+                            isFormatRight = true;
+                            this.registerForm.way = 1;
                         }
-                        else if (this.registerForm.way === 2) {
-                            if (jsValidate.validateEmail(this.registerForm.emailAddress)) {
-                                isFormatRight = true;
-                                this.registerForm.phoneOrEmail = this.registerForm.emailAddress;
-                            }
-                            else {
-                                this.$messageUtil.error("邮箱格式错误");
-                            }
+                        else if (jsValidate.validateEmail(this.registerForm.phoneOrEmail)) {
+                            isFormatRight = true;
+                            this.registerForm.way = 2;
                         }
+                        else {
+                            this.$messageUtil.error("手机号码或邮箱地址格式错误");
+                        }
+
                         if (isFormatRight) {
                             this.isDoing = true;
-                            apiHandler.getRegisteredUserApi().verifyPhoneOrEmailForNew(
+                            apiHandler.getRegisteredUserApi().verifyPhoneOrEmailByForget(
                                 {
                                     way: this.registerForm.way,
                                     phoneOrEmail: this.registerForm.phoneOrEmail
                                 }, (data) => {
                                     if (data.isSuccessful) {
-                                        Vue.$messageUtil.success1(data.responseBody);
+                                        Vue.$messageUtil.success1(data.responseBody + ",下一步");
                                         Vue._data.steps++;
                                     }
                                     else {
@@ -201,7 +196,7 @@
                         }, (data) => {
                             if (data.isSuccessful) {
                                 Vue.$messageUtil.success1(data.responseBody);
-                                apiHandler.getRegisteredUserApi().register(null, (data) => {
+                                apiHandler.getRegisteredUserApi().reset(null, (data) => {
                                     if (data.isSuccessful) {
                                         Vue._data.registeredUser = data.responseBody;
                                         Vue._data.steps++;
@@ -223,7 +218,7 @@
                         break;
                     case 4:
                         if (this.registeredUser == null) {
-                            Vue.$messageUtil.error("注册未成功！");
+                            Vue.$messageUtil.error("重置未成功！");
                             return;
                         }
 
