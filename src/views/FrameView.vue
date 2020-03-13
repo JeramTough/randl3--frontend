@@ -1,5 +1,5 @@
 <template>
-    <el-container>
+    <el-container v-if="menuNotes!=null">
         <!--侧边菜单Start-->
         <el-menu default-active="0" class="el-menu-vertical-demo"
                  @select="onMenuSelected"
@@ -16,52 +16,28 @@
 
             <div v-for="menuNote in menuNotes" :key="menuNote.index">
 
-                <el-menu-item v-if="menuNote.children==null" :index="menuNote.index">
+                <!--没有子菜单的菜单项-->
+                <el-menu-item v-if="menuNote.children==null&&menuNote.isAble!==false" :index="menuNote.index">
                     <i :class="menuNote.iconClass"></i>
                     <span slot="title" class="menu-title">{{menuNote.title}}</span>
                 </el-menu-item>
 
-                <el-submenu v-if="menuNote.children!=null" :index="menuNote.index">
+                <!--有子菜单的菜单项-->
+                <el-submenu v-if="menuNote.children!=null&&menuNote.isAble!==false" :index="menuNote.index">
                     <template slot="title">
                         <i :class="menuNote.iconClass"></i>
                         <span slot="title" class="menu-title">{{menuNote.title}}</span>
                     </template>
                     <el-menu-item-group>
-                        <el-menu-item v-for="childrenMenuNote in menuNote.children" :index="childrenMenuNote.index">
+                        <el-menu-item
+                                v-for="childrenMenuNote in menuNote.children" :index="childrenMenuNote.index"
+                                v-show="childrenMenuNote.isAble!==false">
                             {{childrenMenuNote.title}}
                         </el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
             </div>
 
-
-            <!--  <el-menu-item index="0">
-                  <i class="el-icon-s-home menu-icon"></i>
-                  <span slot="title" class="menu-title">{{menuNoteMap.get("0").title}}</span>
-              </el-menu-item>
-
-              <el-submenu index="1">
-                  <template slot="title">
-                      <i class="el-icon-s-custom menu-icon"></i>
-                      <span slot="title" class="menu-title">{{menuNoteMap.get("1").title}}</span>
-                  </template>
-                  <el-menu-item-group>
-                      <el-menu-item index="1-0">{{menuNoteMap.get("1-0").title}}</el-menu-item>
-                      <el-menu-item index="1-1">{{menuNoteMap.get("1-1").title}}</el-menu-item>
-                  </el-menu-item-group>
-              </el-submenu>
-
-              <el-submenu index="2">
-                  <template slot="title">
-                      <i class="el-icon-lock menu-icon"></i>
-                      <span slot="title" class="menu-title">{{menuNoteMap.get("2").title}}</span>
-                  </template>
-                  <el-menu-item-group>
-                      <el-menu-item index="2-0">{{menuNoteMap.get("2-0").title}}</el-menu-item>
-                      <el-menu-item index="2-1">{{menuNoteMap.get("2-1").title}}</el-menu-item>
-                      <el-menu-item index="2-2">{{menuNoteMap.get("2-2").title}}</el-menu-item>
-                  </el-menu-item-group>
-              </el-submenu>-->
 
         </el-menu>
         <!--侧边菜单End-->
@@ -145,7 +121,7 @@
 
 <script>
     import StatusButton from '@/components/StatusButton.vue';
-    import {menuNotes, menuNoteMap} from '@/views/frame/menu_notes';
+    import menuNoteHandler from '@/jscomponent/MenuNoteHandler';
 
 
     export default {
@@ -155,6 +131,7 @@
             "my-status-button": StatusButton
         },
         mounted: function () {
+            this.menuNotes = menuNoteHandler.getNotes();
             //默认第一个菜单被选中
             this.onMenuSelected("2-1", 1);
         }
@@ -168,8 +145,7 @@
                 tabViewDataList: [],
                 //当前选中的菜单队列数据
                 menuDataQueue: [],
-                menuNotes: menuNotes,
-                menuNoteMap: menuNoteMap
+                menuNotes: null,
             }
         }
         ,

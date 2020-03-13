@@ -18,6 +18,15 @@
             </el-col>
         </el-row>
         <el-row>
+            <el-col :span="11" style="text-align: right;">
+            </el-col>
+            <el-col :span="2">
+                |
+            </el-col>
+            <el-col :span="11" style="text-align: left">
+            </el-col>
+        </el-row>
+        <el-row>
             <el-col :span="20" :offset="4">
                 <div>
                     <el-transfer
@@ -69,7 +78,7 @@
                     }
                 },
                 transferData: [],
-                permissionMap: new Map()
+                permissionMap: new Map(),
             };
         }
         ,
@@ -86,64 +95,60 @@
                     spinner: 'el-icon-loading',
                     background: 'rgba(0, 0, 0, 0.7)'
                 });
-                let sign = 0;
 
+                //获取角色信息
                 apiHandler.getRoleApi().getAll(null, (data) => {
                     if (data.isSuccessful) {
                         Vue._data.roleHolder.roles = data.responseBody;
-                        sign++;
-                        if (sign === 3) {
-                            loading.close();
-                        }
-                    }
-                    else {
-                        loading.close();
-                        Vue.$messageUtil.error(data.responseBody);
-                    }
-                });
-                apiHandler.getApiInfoApi().getAll(null, (data) => {
-                    if (data.isSuccessful) {
-                        Vue._data.apiHolder.allApis = data.responseBody;
-                        sign++;
-                        Vue._data.transferData = [];
-                        for (let api of Vue._data.apiHolder.allApis) {
-                            Vue._data.transferData.push({
-                                label: api.path,
-                                key: api.fid
-                            });
-                        }
 
-                        if (sign === 3) {
-                            loading.close();
-                        }
-                    }
-                    else {
-                        loading.close();
-                        Vue.$messageUtil.error(data.responseBody);
-                    }
-                });
-                apiHandler.getPermissionApi().getAll(null, (data) => {
-                    if (data.isSuccessful) {
-                        let allPermissions = data.responseBody;
-                        for (let permission of allPermissions) {
-                            let permissions = this.permissionMap.get(permission.roleId);
-                            if (permissions == null) {
-                                permissions = [];
+                        //获取api信息
+                        apiHandler.getApiInfoApi().getAll(null, (data) => {
+                            if (data.isSuccessful) {
+                                Vue._data.apiHolder.allApis = data.responseBody;
+                                Vue._data.transferData = [];
+                                for (let api of Vue._data.apiHolder.allApis) {
+                                    Vue._data.transferData.push({
+                                        label: api.path,
+                                        key: api.fid
+                                    });
+                                }
+
+                                //获取权限分配信息
+                                apiHandler.getPermissionApi().getAll(null, (data) => {
+                                    if (data.isSuccessful) {
+                                        let allPermissions = data.responseBody;
+                                        for (let permission of allPermissions) {
+                                            let permissions = this.permissionMap.get(permission.roleId);
+                                            if (permissions == null) {
+                                                permissions = [];
+                                            }
+                                            permissions.push(permission);
+                                            this.permissionMap.set(permission.roleId, permissions);
+                                        }
+
+                                        loading.close();
+                                    }
+                                    else {
+                                        loading.close();
+                                        Vue.$messageUtil.error(data.responseBody);
+                                    }
+                                });
+
                             }
-                            permissions.push(permission);
-                            this.permissionMap.set(permission.roleId, permissions);
-
-                            sign++;
-                            if (sign === 3) {
+                            else {
                                 loading.close();
+                                Vue.$messageUtil.error(data.responseBody);
                             }
-                        }
+                        });
+
                     }
                     else {
                         loading.close();
                         Vue.$messageUtil.error(data.responseBody);
                     }
                 });
+
+
             },
             onRoleChanged: function (selectedRoleId) {
                 let Vue = this;

@@ -11,6 +11,10 @@
                     <el-input v-model="formData.path" autocomplete="off"
                               @input="onFormChanged"></el-input>
                 </el-form-item>
+                <el-form-item label="接口别名" :label-width="formLabelWidth">
+                    <el-input v-model="formData.alias" autocomplete="off"
+                              @input="onFormChanged"></el-input>
+                </el-form-item>
                 <el-form-item label="接口描述" :label-width="formLabelWidth">
                     <el-input v-model="formData.description" autocomplete="off"
                               @input="onFormChanged" placeholder="可以留空"></el-input>
@@ -44,6 +48,7 @@
                 formData: {
                     fid: null,
                     path: null,
+                    alias: null,
                     description: null
                 },
                 isFormChanged: false,
@@ -102,6 +107,7 @@
                     //if it's the update option’
                     this.formData.fid = this.dataSource.fid;
                     this.formData.path = this.dataSource.path;
+                    this.formData.alias = this.dataSource.alias;
                     this.formData.description = this.dataSource.description;
                 }
                 else {

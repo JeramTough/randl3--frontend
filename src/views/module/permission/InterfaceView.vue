@@ -39,6 +39,11 @@
                     width="300">
             </el-table-column>
             <el-table-column
+                    prop="alias"
+                    label="接口别名"
+                    width="250">
+            </el-table-column>
+            <el-table-column
                     prop="description"
                     label="接口描述"
                     width="200">

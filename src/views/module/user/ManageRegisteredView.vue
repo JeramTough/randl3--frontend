@@ -10,7 +10,9 @@
                             <el-input v-model="searchParameter.keyword" placeholder="账号名,手机号,邮箱"></el-input>
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="primary" icon="el-icon-search" @click="queryByKeyword">查询</el-button>
+                            <el-button type="primary" icon="el-icon-search" @click="queryByKeyword"
+                                       v-bind:disabled="permissionHandler.dontHavePermissionByApiAlias('PUYH-GJZCX')">查询
+                            </el-button>
                         </el-form-item>
                     </el-form>
                 </div>
@@ -65,20 +67,23 @@
                     <el-button
                             @click.native.prevent="deleteRow(scope.$index, tableData)"
                             type="text"
-                            size="small">
+                            size="small"
+                            v-bind:disabled="permissionHandler.dontHavePermissionByApiAlias('PUYH-SCZH')">
                         删除
                     </el-button>
 
                     <el-button
                             @click.native.prevent="updateRow(scope.$index, tableData)"
                             type="text"
-                            size="small">
+                            size="small"
+                            v-bind:disabled="permissionHandler.dontHavePermissionByApiAlias('PUYH-ZHXXXG')">
                         修改
                     </el-button>
                     <el-button
                             @click.native.prevent="updateRowForPersonalInfo(scope.$index, tableData)"
                             type="text"
-                            size="small">
+                            size="small"
+                            v-bind:disabled="permissionHandler.dontHavePermissionByApiAlias('PUYH-GRXXXG')">
                         编辑资料
                     </el-button>
                 </template>
@@ -110,6 +115,7 @@
 
 <script>
     import apiHandler from "@/api/base/ApiHandler";
+    import permissionHandler from '@/jscomponent/PermissionHanlder';
     import AUdialog from "@/components/UpdateRegisteredUserDialog.vue";
     import UPdialog from "@/components/UpdatePersonalInfoDialog.vue";
 
@@ -117,7 +123,7 @@
         name: "ManageRegisteredUserView",
         components: {
             "my-au-dialog": AUdialog,
-            "my-up-dialog":UPdialog
+            "my-up-dialog": UPdialog
         },
         mounted: function () {
             this.obtainTableData();
@@ -131,7 +137,7 @@
                 isLoading: false,
 
                 dialogVisible: false,
-                dialogVisible2:false,
+                dialogVisible2: false,
 
                 dialogTitle: "",
                 /**
@@ -150,7 +156,8 @@
                 searchParameter: {
                     keyword: ''
                 },
-                selectedEntity: null
+                selectedEntity: null,
+                permissionHandler: permissionHandler
             }
         }
         ,
@@ -160,6 +167,9 @@
              */
             currentTotal: function () {
                 return this.tableData.length;
+            },
+            systemUser: function () {
+                return this.$store.state.systemUser;
             }
         }
         ,
@@ -248,7 +258,7 @@
             ,
             onDialogDone(editedRegisteredUser) {
                 //更新的情况下
-                this.selectedEntity=editedRegisteredUser;
+                this.selectedEntity = editedRegisteredUser;
                 this.selectedEntity.enabled = editedRegisteredUser.accountStatus === 1 ? '是' : '否';
                 /*Object.keys(editedRegisteredUser).forEach(key => {
                     this.selectedEntity[key] = editedRegisteredUser[key];
