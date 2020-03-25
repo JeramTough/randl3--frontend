@@ -159,7 +159,7 @@
 
                     this.formData.uid = this.dataSource.uid;
                     this.formData.username = this.dataSource.username;
-                    this.formData.password = this.dataSource.password;
+                    this.formData.password = null;
                     this.formData.phoneNumber = this.dataSource.phoneNumber;
                     this.formData.emailAddress = this.dataSource.emailAddress;
                     this.formData.accountStatus = this.dataSource.accountStatus;

@@ -50,8 +50,15 @@
                                            @click.native.prevent="loginForm.isVerificationCode=false">使用密码登录？
                                 </el-button>
                             </el-col>
-                            <el-col :span="6" :offset="12">
-                                <el-button type="text"><router-link to="userForget">忘记密码？</router-link></el-button>
+                            <el-col :span="3" :offset="11">
+                                <el-button type="text">
+                                    <router-link to="userRegister">没有账号？</router-link>
+                                </el-button>
+                            </el-col>
+                            <el-col :span="3" :offset="1">
+                                <el-button type="text">
+                                    <router-link to="userForget">忘记密码？</router-link>
+                                </el-button>
                             </el-col>
                         </el-row>
                     </div>

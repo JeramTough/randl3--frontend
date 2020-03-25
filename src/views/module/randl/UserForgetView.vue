@@ -14,7 +14,7 @@
                         <div>
                             <el-input
                                     placeholder="请输入手机号码或者邮箱"
-                                    v-model="registerForm.phoneOrEmail"
+                                    v-model="form.phoneOrEmail"
                                     clearable>
                             </el-input>
                         </div>
@@ -26,7 +26,7 @@
                             <el-form-item label="验证码">
                                 <el-input
                                         placeholder="6位数字"
-                                        v-model="registerForm.verificationCode"
+                                        v-model="form.verificationCode"
                                         clearable>
                                 </el-input>
                             </el-form-item>
@@ -42,12 +42,12 @@
 
                     <!-- 第三步视图-->
                     <div v-if="steps===3">
-                        <el-input v-model.lazy="registerForm.password" autocomplete="off"
+                        <el-input v-model.lazy="form.password" autocomplete="off"
                                   placeholder="密码" @input="100"
                                   maxlength="16"
                                   show-password
                                   type="password"></el-input>
-                        <el-input v-model.lazy="registerForm.repeatedPassword" autocomplete="off"
+                        <el-input v-model.lazy="form.repeatedPassword" autocomplete="off"
                                   placeholder="确定密码" @input="100"
                                   style="margin-bottom: 20px;"
                                   maxlength="16"
@@ -100,12 +100,13 @@
             return {
                 steps: 1,
                 isDoing: false,
-                registerForm: {
+                form: {
                     way: 1,
                     phoneOrEmail: null,
                     verificationCode: null,
                     password: null,
-                    repeatedPassword: null
+                    repeatedPassword: null,
+                    transactionId: null
                 },
                 sendVerificationCodeText: "发送验证码",
                 sendVerificationCodeButtonDisable: false,
@@ -132,13 +133,13 @@
                     case 1:
                         var isFormatRight = false;
 
-                        if (jsValidate.validatePhone(this.registerForm.phoneOrEmail)) {
+                        if (jsValidate.validatePhone(this.form.phoneOrEmail)) {
                             isFormatRight = true;
-                            this.registerForm.way = 1;
+                            this.form.way = 1;
                         }
-                        else if (jsValidate.validateEmail(this.registerForm.phoneOrEmail)) {
+                        else if (jsValidate.validateEmail(this.form.phoneOrEmail)) {
                             isFormatRight = true;
-                            this.registerForm.way = 2;
+                            this.form.way = 2;
                         }
                         else {
                             this.$messageUtil.error("手机号码或邮箱地址格式错误");
@@ -148,11 +149,12 @@
                             this.isDoing = true;
                             apiHandler.getRegisteredUserApi().verifyPhoneOrEmailByForget(
                                 {
-                                    way: this.registerForm.way,
-                                    phoneOrEmail: this.registerForm.phoneOrEmail
+                                    way: this.form.way,
+                                    phoneOrEmail: this.form.phoneOrEmail
                                 }, (data) => {
                                     if (data.isSuccessful) {
-                                        Vue.$messageUtil.success1(data.responseBody + ",下一步");
+                                        Vue.$messageUtil.success1(data.responseBody.message + ",下一步");
+                                        Vue._data.form.transactionId = data.responseBody.transactionId;
                                         Vue._data.steps++;
                                     }
                                     else {
@@ -163,40 +165,49 @@
                         }
                         break;
                     case 2:
-                        if (this.registerForm.verificationCode == null || this.registerForm.verificationCode.length === 0) {
+                        if (this.form.verificationCode == null || this.form.verificationCode.length === 0) {
                             this.$messageUtil.error("验证码未填写");
                             break;
                         }
 
                         this.isDoing = true;
-                        apiHandler.getVerificationCodeApi().verify({code: this.registerForm.verificationCode}, (data) => {
-                            if (data.isSuccessful) {
-                                Vue.$messageUtil.success1(data.responseBody);
-                                Vue._data.steps++;
-                            }
-                            else {
-                                Vue.$messageUtil.error(data.responseBody);
-                            }
-                            Vue._data.isDoing = false;
-                        });
+                        apiHandler.getVerificationCodeApi().verify(
+                            {
+                                phoneOrEmail: this.form.phoneOrEmail,
+                                verificationCode: this.form.verificationCode
+                            }, (data) => {
+                                if (data.isSuccessful) {
+                                    Vue.$messageUtil.success1(data.responseBody);
+                                    Vue._data.steps++;
+                                }
+                                else {
+                                    Vue.$messageUtil.error(data.responseBody);
+                                }
+                                Vue._data.isDoing = false;
+                            });
 
                         break;
                     case 3:
-                        if (this.registerForm.password == null || this.registerForm.password.length > 16 || this.registerForm.password.length < 8) {
+                        if (this.form.password == null || this.form.password.length > 16 || this.form.password.length < 8) {
                             this.$messageUtil.error("密码格式不正确！允许长度范围在8-16位的非空白任意字符");
                             return;
                         }
-                        if (this.registerForm.password !== this.registerForm.repeatedPassword) {
+                        if (this.form.password !== this.form.repeatedPassword) {
                             this.$messageUtil.error("两次密码不一致！");
                             return;
                         }
-                        apiHandler.getRegisteredUserApi().verifyPassword({
-                            password: this.registerForm.password,
-                            repeatedPassword: this.registerForm.repeatedPassword
+                        apiHandler.getRegisteredUserApi().verifyPasswordByForget({
+                            password: this.form.password,
+                            repeatedPassword: this.form.repeatedPassword,
+                            way: this.form.way,
+                            transactionId: this.form.transactionId
                         }, (data) => {
                             if (data.isSuccessful) {
                                 Vue.$messageUtil.success1(data.responseBody);
-                                apiHandler.getRegisteredUserApi().reset(null, (data) => {
+                                apiHandler.getRegisteredUserApi().reset({
+                                    way: this.form.way,
+                                    transactionId: this.form.transactionId
+                                }, (data) => {
                                     if (data.isSuccessful) {
                                         Vue._data.registeredUser = data.responseBody;
                                         Vue._data.steps++;
@@ -224,8 +235,8 @@
 
                         this.$router.push({
                             path: 'userLogin', query: {
-                                phoneOrEmail: this.registerForm.phoneOrEmail,
-                                password: this.registerForm.password
+                                phoneOrEmail: this.form.phoneOrEmail,
+                                password: this.form.password
                             }
                         });
 
@@ -241,8 +252,8 @@
                     this.isDoing = true;
                     apiHandler.getVerificationCodeApi().send(
                         {
-                            way: this.registerForm.way,
-                            phoneOrEmail: this.registerForm.phoneOrEmail
+                            way: this.form.way,
+                            phoneOrEmail: this.form.phoneOrEmail
                         }, (data) => {
                             if (data.isSuccessful) {
                                 Vue._data.sendVerificationCodeButtonDisable = true;

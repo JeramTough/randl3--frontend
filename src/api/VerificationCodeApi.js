@@ -4,8 +4,8 @@ const BASE = "/verificationCode";
 
 export default {
 
-    send(data, caller) {
-        randl2HttpClient.post(BASE + "/send", data, caller);
+    send(params, caller) {
+        randl2HttpClient.postWithParams(BASE + "/send", params, caller);
     },
     verify(params, caller) {
         randl2HttpClient.postWithParams(BASE + "/verify", params, caller);

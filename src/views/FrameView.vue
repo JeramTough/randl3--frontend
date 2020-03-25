@@ -133,7 +133,7 @@
         mounted: function () {
             this.menuNotes = menuNoteHandler.getNotes();
             //默认第一个菜单被选中
-            this.onMenuSelected("2-1", 1);
+            this.onMenuSelected("0", 1);
         }
         ,
         data() {

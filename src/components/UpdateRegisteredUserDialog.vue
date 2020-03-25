@@ -122,6 +122,7 @@
                 this.formData.phoneNumber = this.dataSource.phoneNumber;
                 this.formData.emailAddress = this.dataSource.emailAddress;
                 this.formData.accountStatus = this.dataSource.accountStatus;
+                this.formData.password = null;
             },
             handleDoneEvent() {
                 let registeredUser = {};

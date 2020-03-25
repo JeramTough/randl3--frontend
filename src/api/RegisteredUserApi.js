@@ -13,11 +13,14 @@ export default {
     verifyPassword(data, caller) {
         randl2HttpClient.post(BASE + "/verify/password", data, caller);
     },
-    register(params, caller) {
-        randl2HttpClient.postWithParams(BASE + "/register", params, caller);
+    verifyPasswordByForget(data, caller) {
+        randl2HttpClient.post(BASE + "/verify/passwordByForget", data, caller);
     },
-    reset(params, caller) {
-        randl2HttpClient.postWithParams(BASE + "/reset", params, caller);
+    register(data, caller) {
+        randl2HttpClient.post(BASE + "/register", data, caller);
+    },
+    reset(data, caller) {
+        randl2HttpClient.post(BASE + "/reset", data, caller);
     },
     update(data, caller) {
         randl2HttpClient.post(BASE + "/update", data, caller);
