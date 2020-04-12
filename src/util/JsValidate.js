@@ -1,4 +1,14 @@
 export default {
+
+    isEmpty: function (str) {
+        if (str === undefined || str === null || str.length === 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    },
+
     /**
      * 验证密码复杂度（必须包含数字字母）
      * @param str

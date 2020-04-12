@@ -4,6 +4,7 @@ import apiInfoApi from "@/api/ApiInfoApi";
 import permissionApi from "@/api/PermissionApi";
 import verificationCodeApi from "@/api/VerificationCodeApi";
 import registeredUserApi from "@/api/RegisteredUserApi";
+import registeredUserLoginedApi from "@/api/RegisteredUserLoginedApi";
 import personalInfoApi from "@/api/PersonalInfoApi";
 import surfaceImageApi from "@/api/SurfaceImageApi";
 
@@ -35,6 +36,9 @@ let apiHandler = {
     ,
     getSurfaceImageApi: function () {
         return surfaceImageApi;
+    }
+    , getRegisteredUserLoginedApi: function () {
+        return registeredUserLoginedApi;
     }
 };
 

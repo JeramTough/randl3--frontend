@@ -21,6 +21,10 @@ const routePaths = [
     {
         path: "/userRegister",
         component: () => import( '@/views/module/randl/UserRegisterView.vue'),
+    },
+    {
+        path: "/registeredUserHome",
+        component: () => import( '@/views/module/registeruser/RegisterUserHomeView.vue'),
     }
     ,
     {

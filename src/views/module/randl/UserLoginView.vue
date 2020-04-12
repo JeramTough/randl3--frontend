@@ -16,13 +16,13 @@
                         <el-form-item label="账号">
                             <el-input v-model="loginForm.credential" placeholder="手机号码或者邮箱地址"></el-input>
                         </el-form-item>
-                        <el-form-item label="密码" v-show="loginForm.isVerificationCode===false">
+                        <el-form-item label="密码" v-show="loginForm.loginWay===1">
                             <el-input v-model="loginForm.password" placeholder="6位数字" maxlength="16"
                                       show-password type="password"></el-input>
                         </el-form-item>
                     </el-form>
 
-                    <el-form v-show="loginForm.isVerificationCode===true"
+                    <el-form v-show="loginForm.loginWay===2"
                              :inline="true" class="demo-form-inline">
                         <el-form-item label="验证码">
                             <el-input
@@ -43,11 +43,11 @@
                     <div>
                         <el-row>
                             <el-col :span="6">
-                                <el-button v-show="loginForm.isVerificationCode===false" type="text"
-                                           @click.native.prevent="loginForm.isVerificationCode=true">使用验证码登录？
+                                <el-button v-show="loginForm.loginWay===1" type="text"
+                                           @click.native.prevent="loginForm.loginWay=2">使用验证码登录？
                                 </el-button>
-                                <el-button v-show="loginForm.isVerificationCode===true" type="text"
-                                           @click.native.prevent="loginForm.isVerificationCode=false">使用密码登录？
+                                <el-button v-show="loginForm.loginWay===2" type="text"
+                                           @click.native.prevent="loginForm.loginWay=1">使用密码登录？
                                 </el-button>
                             </el-col>
                             <el-col :span="3" :offset="11">
@@ -64,7 +64,7 @@
                     </div>
 
                     <div>
-                        <el-button type="primary" @click="doLogin('loginForm')" round>登录</el-button>
+                        <el-button type="primary" @click="doLogin(loginForm)" round>登录</el-button>
                     </div>
 
                 </el-card>
@@ -76,6 +76,9 @@
 
 <script>
 
+    import jsValidate from '@/util/JsValidate';
+    import apiHandler from "@/api/base/ApiHandler";
+
     export default {
         name: "UserLoginView",
         data() {
@@ -84,7 +87,7 @@
                 sendVerificationCodeButtonDisable: false,
                 sendVerificationCodeText: "发送验证码",
                 loginForm: {
-                    isVerificationCode: false,
+                    loginWay: 1,
                     credential: this.$route.query.phoneOrEmail === undefined ? null : this.$route.query.phoneOrEmail,
                     password: this.$route.query.password === undefined ? null : this.$route.query.password,
                     verificationCode: null
@@ -93,10 +96,73 @@
         },
         methods: {
             doLogin(loginForm) {
+                let Vue = this;
+
+                if (jsValidate.isEmpty(loginForm.credential)) {
+                    Vue.$messageUtil.error("登录凭证不能为空");
+                }
+
+                switch (loginForm.loginWay) {
+                    case 1:
+                        if (jsValidate.isEmpty(loginForm.password)) {
+                            Vue.$messageUtil.error("登录密码不能为空");
+                            break;
+                        }
+
+                        apiHandler.getRegisteredUserLoginedApi().loginByPassword({
+                            credential: Vue._data.loginForm.credential,
+                            password: Vue._data.loginForm.password
+                        }, (data) => {
+                            if (data.isSuccessful) {
+                                let systemUser = data.responseBody.systemUser;
+                                //保存用户登录成功数据
+                                Vue.$store.commit('loginSuccessfully', systemUser);
+                                //跳转
+                                Vue.$messageUtil.success("【" + systemUser.username + "】登录成功！");
+                                Vue.$router.push({path: 'registeredUserHome'});
+                            }
+                            else {
+                                Vue.$messageUtil.error(data.responseBody);
+                            }
+                        });
+
+                        break;
+                    case 2:
+                        break;
+                    default:
+                }
             }
             ,
             sendVerificationCode() {
-
+                let Vue = this;
+                if (!this.sendVerificationCodeButtonDisable) {
+                    this.isDoing = true;
+                    apiHandler.getVerificationCodeApi().send(
+                        {
+                            way: this.form.loginWay,
+                            phoneOrEmail: this.form.phoneOrEmail
+                        }, (data) => {
+                            if (data.isSuccessful) {
+                                Vue._data.sendVerificationCodeButtonDisable = true;
+                                Vue.$messageUtil.success1(data.responseBody);
+                                let interval = 60;
+                                Vue._data.sendVerificationCodeText = "等待（" + interval + "）秒";
+                                let timer = self.setInterval(function () {
+                                    Vue._data.sendVerificationCodeText = "等待（" + interval + "）秒";
+                                    interval--;
+                                    if (interval === -1) {
+                                        window.clearInterval(timer);
+                                        Vue._data.sendVerificationCodeButtonDisable = false;
+                                        Vue._data.sendVerificationCodeText = "发送验证码";
+                                    }
+                                }, 1000);
+                            }
+                            else {
+                                Vue.$messageUtil.error(data.responseBody);
+                            }
+                            Vue._data.isDoing = false;
+                        });
+                }
             }
         }
     }

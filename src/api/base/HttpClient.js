@@ -18,7 +18,8 @@ function HttpClient(baseUrl) {
                 method: 'get',
                 url: url,
                 withCredentials: true,
-                params: params
+                params: params,
+                headers: {'Authorization': handle.authHeader}
             }).then(function (response) {
                 handle.handleResponse(response, caller);
             }).catch(function (error) {
@@ -33,7 +34,8 @@ function HttpClient(baseUrl) {
                 method: 'post',
                 url: url,
                 withCredentials: true,
-                data: data
+                data: data,
+                headers: {'Authorization': handle.authHeader}
             }).then(function (response) {
                 handle.handleResponse(response, caller);
             }).catch(function (error) {
@@ -48,7 +50,8 @@ function HttpClient(baseUrl) {
                 method: 'post',
                 url: url,
                 withCredentials: true,
-                params: params
+                params: params,
+                headers: {'Authorization': handle.authHeader}
             }).then(function (response) {
                 handle.handleResponse(response, caller);
             }).catch(function (error) {
@@ -56,9 +59,19 @@ function HttpClient(baseUrl) {
             });
         },
 
-        //*****************************************************
+        setAuthorization(token) {
+            this.handle.authHeader = "Bearer " + token;
+        },
+
+        removeAuthorization() {
+            this.handle.authHeader = null;
+        },
+
         handle: {
+
             isPrintedLog: false,
+
+            authHeader: null,
 
             handleResponse: function (response, caller) {
 
@@ -68,7 +81,8 @@ function HttpClient(baseUrl) {
 
                 if (response.status === 200) {
                     caller(response.data);
-                } else {
+                }
+                else {
                     caller({
                         isSuccessful: false,
                         responseBody: response.statusText,
