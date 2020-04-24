@@ -13,6 +13,15 @@ export default {
             caller(data);
         });
     },
+    loginByVerificationCode(params, caller) {
+        randl2HttpClient.postWithParams(BASE + "/login/byVerificationCode", params, (data) => {
+            if (data.isSuccessful) {
+                let token = data.responseBody.token;
+                randl2HttpClient.setAuthorization(token);
+            }
+            caller(data);
+        });
+    },
     bindingPhoneOrEmail(data, caller) {
         randl2HttpClient.post(BASE + "/logined/bindingPhoneOrEmail", data, caller);
     },

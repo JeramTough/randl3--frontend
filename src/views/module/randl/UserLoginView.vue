@@ -17,7 +17,7 @@
                             <el-input v-model="loginForm.credential" placeholder="手机号码或者邮箱地址"></el-input>
                         </el-form-item>
                         <el-form-item label="密码" v-show="loginForm.loginWay===1">
-                            <el-input v-model="loginForm.password" placeholder="6位数字" maxlength="16"
+                            <el-input v-model="loginForm.password" placeholder="8-16位字符密码" maxlength="16"
                                       show-password type="password"></el-input>
                         </el-form-item>
                     </el-form>
@@ -102,6 +102,20 @@
                     Vue.$messageUtil.error("登录凭证不能为空");
                 }
 
+                let caller = function (data) {
+                    if (data.isSuccessful) {
+                        let systemUser = data.responseBody.systemUser;
+                        //保存用户登录成功数据
+                        Vue.$store.commit('loginSuccessfully', systemUser);
+                        //跳转
+                        Vue.$messageUtil.success("【" + systemUser.username + "】登录成功！");
+                        Vue.$router.push({path: 'registeredUserHome'});
+                    }
+                    else {
+                        Vue.$messageUtil.error(data.responseBody);
+                    }
+                };
+
                 switch (loginForm.loginWay) {
                     case 1:
                         if (jsValidate.isEmpty(loginForm.password)) {
@@ -112,35 +126,37 @@
                         apiHandler.getRegisteredUserLoginedApi().loginByPassword({
                             credential: Vue._data.loginForm.credential,
                             password: Vue._data.loginForm.password
-                        }, (data) => {
-                            if (data.isSuccessful) {
-                                let systemUser = data.responseBody.systemUser;
-                                //保存用户登录成功数据
-                                Vue.$store.commit('loginSuccessfully', systemUser);
-                                //跳转
-                                Vue.$messageUtil.success("【" + systemUser.username + "】登录成功！");
-                                Vue.$router.push({path: 'registeredUserHome'});
-                            }
-                            else {
-                                Vue.$messageUtil.error(data.responseBody);
-                            }
-                        });
+                        }, caller);
 
                         break;
                     case 2:
+                        if (jsValidate.isEmpty(loginForm.verificationCode)) {
+                            Vue.$messageUtil.error("验证码不能为空");
+                            break;
+                        }
+
+                        apiHandler.getRegisteredUserLoginedApi().loginByVerificationCode({
+                            credential: Vue._data.loginForm.credential,
+                            verificationCode: Vue._data.loginForm.verificationCode
+                        }, caller);
                         break;
                     default:
                 }
             }
             ,
             sendVerificationCode() {
+                let sendWay = this.getSendWay();
+                if (sendWay == null) {
+                    return;
+                }
+
                 let Vue = this;
                 if (!this.sendVerificationCodeButtonDisable) {
                     this.isDoing = true;
                     apiHandler.getVerificationCodeApi().send(
                         {
-                            way: this.form.loginWay,
-                            phoneOrEmail: this.form.phoneOrEmail
+                            way: sendWay,
+                            phoneOrEmail: Vue._data.loginForm.credential
                         }, (data) => {
                             if (data.isSuccessful) {
                                 Vue._data.sendVerificationCodeButtonDisable = true;
@@ -163,6 +179,22 @@
                             Vue._data.isDoing = false;
                         });
                 }
+            }
+            ,
+            getSendWay() {
+                let sendWay = null;
+                if (jsValidate.validatePhone(this.loginForm.credential)) {
+                    sendWay = 1;
+                }
+                else {
+                    if (jsValidate.validateEmail(this.loginForm.credential)) {
+                        sendWay = 2;
+                    }
+                }
+                if (sendWay === null) {
+                    this.$messageUtil.error("账号格式不正确，只能为手机号码格式或者邮箱格式！");
+                }
+                return sendWay;
             }
         }
     }
