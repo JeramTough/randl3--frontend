@@ -19,7 +19,7 @@ function HttpClient(baseUrl) {
                 url: url,
                 withCredentials: true,
                 params: params,
-                headers: {'Authorization': handle.authHeader}
+                headers: {'Authorization': handle.getAuthHeader()}
             }).then(function (response) {
                 handle.handleResponse(response, caller);
             }).catch(function (error) {
@@ -35,7 +35,7 @@ function HttpClient(baseUrl) {
                 url: url,
                 withCredentials: true,
                 data: data,
-                headers: {'Authorization': handle.authHeader}
+                headers: {'Authorization': handle.getAuthHeader()}
             }).then(function (response) {
                 handle.handleResponse(response, caller);
             }).catch(function (error) {
@@ -51,7 +51,7 @@ function HttpClient(baseUrl) {
                 url: url,
                 withCredentials: true,
                 params: params,
-                headers: {'Authorization': handle.authHeader}
+                headers: {'Authorization': handle.getAuthHeader()}
             }).then(function (response) {
                 handle.handleResponse(response, caller);
             }).catch(function (error) {
@@ -60,19 +60,24 @@ function HttpClient(baseUrl) {
         },
 
         setAuthorization(token) {
-            this.handle.authHeader = "Bearer " + token;
+            let authHeader = "Bearer " + token;
+            this.handle.setAuthHeader(authHeader);
         },
 
         removeAuthorization() {
-            this.handle.authHeader = null;
+            this.handle.setAuthHeader(null);
         },
 
         handle: {
 
             isPrintedLog: false,
 
-            authHeader: null,
-
+            setAuthHeader: function (authHeader) {
+                sessionStorage.setItem("authHeader", authHeader);
+            },
+            getAuthHeader: function () {
+                return sessionStorage.getItem("authHeader");
+            },
             handleResponse: function (response, caller) {
 
                 if (this.isPrintedLog) {

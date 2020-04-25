@@ -2,7 +2,7 @@
     <body>
 
         <!--SIGN UP-->
-        <h1>klasikal Login Form</h1>
+        <h1>RandL2用户管理系统</h1>
         <div class="login-form">
             <div style="color: white;padding-top: 5px;background: #3ea751;padding-bottom: 5px;"> 管理员系统登录</div>
 

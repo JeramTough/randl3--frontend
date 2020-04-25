@@ -1,7 +1,4 @@
 <template>
-    <!-- 用户登录
-     {{loginForm.credential}}
-     {{loginForm.password}}-->
     <div id="body">
         <el-row type="flex" align="middle">
             <el-col :span="10" :offset="7">

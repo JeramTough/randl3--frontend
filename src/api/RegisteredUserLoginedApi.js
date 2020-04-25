@@ -22,6 +22,18 @@ export default {
             caller(data);
         });
     },
+    getPersonalInfo(params, caller) {
+        randl2HttpClient.get(BASE + "/logined/personalInfo", params, caller);
+    },
+    updatePersonalInfo(data, caller) {
+        randl2HttpClient.post(BASE + "/logined/updatePersonalInfo", data, caller);
+    },
+    updateSurfaceImage(data, caller) {
+        randl2HttpClient.post(BASE + "/logined/updateSurfaceImage", data, caller);
+    },
+    resetPassword(data, caller) {
+        randl2HttpClient.post(BASE + "/logined/resetPassword", data, caller);
+    },
     bindingPhoneOrEmail(data, caller) {
         randl2HttpClient.post(BASE + "/logined/bindingPhoneOrEmail", data, caller);
     },
