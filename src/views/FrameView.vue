@@ -131,6 +131,8 @@
             "my-status-button": StatusButton
         },
         mounted: function () {
+            this.$store.commit('initFromCache');
+
             this.menuNotes = menuNoteHandler.getNotes();
             //默认第一个菜单被选中
             this.onMenuSelected("0", 1);

@@ -66,6 +66,7 @@
                         break;
                     case 1:
                         this.$router.push({path: '/adminLogin'});
+                        this.$store.commit('clearCache');
                         break;
                     default:
                         break;

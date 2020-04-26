@@ -166,100 +166,74 @@
                             </div>
                             <div v-show="selectedIndex===1">
 
-                                <div class="title2"><i class="el-icon-user-solid"></i>编辑个人资料</div>
+                                <div class="title2"><i class="el-icon-user-solid"></i>账户绑定</div>
 
-                                <el-form ref="form" :model="formData" label-width="150px" style="margin-right: 20px;">
+                                <el-form ref="form" :model="formData" label-width="150px" style="margin-right: 20px;
+margin-top: 10%">
 
-                                    <el-form-item label="昵称">
-                                        <el-input v-model="formData.nickname"
-                                                  maxlength="20"
-                                                  show-word-limit
-                                                  @input="onFormChanged"></el-input>
+                                    <el-form-item label="绑定的手机号码"
+                                                  v-show="isBindingEmail!==true">
+                                        <el-input v-model="formData.phoneNumber"
+                                                  suffix-icon="el-icon-phone"
+                                                  :disabled="!isBindingPhone"></el-input>
+
+                                        <div v-show="isBindingPhone" class="reminder-text">输入需要绑定或替换的手机号码
+                                        </div>
+
+                                        <el-button type="text" v-show="!isBindingPhone"
+                                                   @click.native.prevent="isBindingPhone=true">更改/绑定
+                                        </el-button>
                                     </el-form-item>
 
-                                    <el-form-item
-                                            label="年龄"
-                                            prop="age"
-                                            :rules="[{ type: 'number', message: '年龄必须为数字值'}]">
-                                        <el-input type="age" v-model.number="formData.age" autocomplete="off"
-                                                  maxlength="3"
-                                                  show-word-limit
-                                                  @input="onFormChanged"></el-input>
+                                    <el-form-item label="绑定的邮箱" v-show="isBindingPhone!==true">
+                                        <el-input v-model="formData.emailAddress"
+                                                  suffix-icon="el-icon-message"
+                                                  :disabled="!isBindingEmail"></el-input>
+
+                                        <div v-show="isBindingEmail" class="reminder-text">输入需要绑定或替换的邮箱地址
+                                        </div>
+
+                                        <el-button type="text" v-show="!isBindingEmail"
+                                                   @click.native.prevent="isBindingEmail=true">更改/绑定
+                                        </el-button>
                                     </el-form-item>
 
-                                    <el-form-item label="性别">
-                                        <el-radio-group v-model="formData.gender"
-                                                        @change="onFormChanged">
-                                            <el-radio label="男"></el-radio>
-                                            <el-radio label="女"></el-radio>
-                                        </el-radio-group>
-                                    </el-form-item>
-
-                                    <el-form-item label="生日">
-                                        <el-col :span="24">
-                                            <el-date-picker type="date" placeholder="选择日期"
-                                                            v-model="formData.birthday"
-                                                            style="width: 100%;"
-                                                            @change="onFormChanged"></el-date-picker>
-                                        </el-col>
-                                    </el-form-item>
-
-                                    <el-form-item label="真实姓名">
-                                        <el-input v-model="formData.realname"
-                                                  maxlength="8"
-                                                  show-word-limit
-                                                  @input="onFormChanged"></el-input>
-                                    </el-form-item>
-
-                                    <el-form-item label="身份证号">
-                                        <el-input v-model="formData.identityNumber"
-                                                  maxlength="18"
-                                                  show-word-limit
-                                                  @input="onFormChanged"></el-input>
-                                    </el-form-item>
-
-                                    <el-form-item label="毕业/在读学校">
-                                        <el-input v-model="formData.school"
-                                                  maxlength="20"
-                                                  show-word-limit
-                                                  @input="onFormChanged"></el-input>
-                                    </el-form-item>
-
-                                    <el-form-item label="联系方式">
-                                        <el-input v-model="formData.contactWays"
-                                                  maxlength="20"
-                                                  show-word-limit
-                                                  @input="onFormChanged"></el-input>
-                                    </el-form-item>
-
-                                    <el-form-item label="家庭地址">
-                                        <el-input v-model="formData.homeAddress"
-                                                  maxlength="20"
-                                                  show-word-limit
-                                                  @input="onFormChanged"></el-input>
-                                    </el-form-item>
-
-                                    <el-form-item label="工作/职业">
-                                        <el-input v-model="formData.job"
-                                                  maxlength="10"
-                                                  show-word-limit
-                                                  @input="onFormChanged"></el-input>
-                                    </el-form-item>
-
-                                    <el-form-item label="签名">
-                                        <el-input v-model="formData.personalizedSignature"
-                                                  type="textarea"
-                                                  maxlength="30"
-                                                  show-word-limit
-                                                  autosize
-                                                  @input="onFormChanged"></el-input>
-                                    </el-form-item>
 
                                 </el-form>
 
+                                <el-row v-show="isBindingEmail||isBindingPhone"
+                                        style="margin-bottom: 40px;">
+                                    <el-col :span="15">
+                                        <div style="text-align: right">
+                                            <el-input style="width: 150px;"
+                                                      placeholder="6位数字"
+                                                      size="small"
+                                                      maxlength="6"
+                                                      show-word-limit
+                                                      v-model="formData.verificationCode"
+                                                      clearable/>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="9">
+                                        <div style="text-align: left">
+                                            <my-timer-button hint-content="发送验证码"
+                                                             :count="60"
+                                                             ref='myTimerButton'
+                                                             @click.native.prevent="sendVerificationCode()"/>
+                                        </div>
+                                    </el-col>
+                                </el-row>
+
                                 <el-button type="primary" style="margin-bottom: 3%;" round
-                                           v-bind:disabled="!isFormChanged" @click="onSubmit">保存修改
+                                           @click="cancelBBinding"
+                                           v-show="isBindingPhone||isBindingEmail">取消
                                 </el-button>
+
+                                <el-button type="primary" style="margin-bottom: 3%;" round
+                                           @click="doBinding"
+                                           v-show="isBindingPhone||isBindingEmail">确定
+                                </el-button>
+
 
                             </div>
                             <div v-show="selectedIndex===2">
@@ -314,23 +288,31 @@
 
     import apiHandler from "@/api/base/ApiHandler";
     import jsValidate from "@/util/JsValidate";
+    import TimerButton from "@/components/button/TimerButton.vue";
 
     export default {
         name: "RegisterUserHomeView"
         ,
+        components: {
+            "my-timer-button": TimerButton,
+        },
         mounted: function () {
-            apiHandler.getRegisteredUserLoginedApi().bindingPhoneOrEmail(null, (data) => {
-                console.info(data);
-            });
-            this.surfaceImage = this.systemUser.surfaceImage;
+            this.$store.commit('initFromCache');
+
             this.obtainPersonalInfo();
+
+            this.surfaceImage = this.systemUser.surfaceImage;
+            this.formData.phoneNumber = this.systemUser.phoneNumber;
+            this.formData.emailAddress = this.systemUser.emailAddress
         }
         ,
         data: () => {
             return {
                 isLoading: false,
+                isBindingPhone: false,
+                isBindingEmail: false,
                 isUpdatingImage: false,
-                selectedIndex: 0,
+                selectedIndex: 1,
                 isFormChanged: false,
                 surfaceImage: null,
                 formData: {
@@ -350,7 +332,11 @@
 
                     oldPassword: null,
                     newPassword: null,
-                    repeatedNewPassword: null
+                    repeatedNewPassword: null,
+
+                    phoneNumber: "12321312",
+                    emailAddress: null,
+                    verificationCode: null
                 }
             }
         }
@@ -367,6 +353,7 @@
                 this.selectedIndex = Number(command);
                 if (this.selectedIndex === 3) {
                     Vue.$router.push({path: 'userLogin'});
+                    this.$store.commit('clearCache');
                 }
             }
             ,
@@ -381,7 +368,9 @@
                     if (data.isSuccessful) {
                         let personalInfo = data.responseBody;
                         Object.keys(Vue._data.formData).forEach(key => {
-                            Vue._data.formData[key] = personalInfo[key];
+                            if (personalInfo[key] !== undefined || personalInfo[key] != null) {
+                                Vue._data.formData[key] = personalInfo[key];
+                            }
                         });
                         Vue._data.isLoading = false;
                     }
@@ -477,8 +466,102 @@
                     }
                     Vue._data.isLoading = false;
                 });
+            }
+            ,
+            cancelBBinding() {
+                this.isBindingPhone = false;
+                this.isBindingEmail = false;
+            }
+            ,
+            sendVerificationCode() {
+                let Vue = this;
+                let myTimerButton = this.$refs.myTimerButton;
 
+                let sendWay = 0;
+                let phoneOrEmail = null;
 
+                if (this.isBindingPhone) {
+                    let isPhone = jsValidate.validatePhone(this.formData.phoneNumber);
+                    if (isPhone) {
+                        sendWay = 1;
+                        phoneOrEmail = this.formData.phoneNumber;
+                    }
+                    else {
+                        this.$messageUtil.error("手机号码格式错误!");
+                        return
+                    }
+                }
+                if (this.isBindingEmail) {
+                    let isEmail = jsValidate.validateEmail(this.formData.emailAddress);
+                    if (isEmail) {
+                        sendWay = 2;
+                        phoneOrEmail = this.formData.emailAddress;
+                    }
+                    else {
+                        this.$messageUtil.error("邮箱地址格式错误!");
+                        return
+                    }
+                }
+
+                myTimerButton.doCountDown();
+                apiHandler.getVerificationCodeApi().send(
+                    {
+                        way: sendWay,
+                        phoneOrEmail: phoneOrEmail
+                    }, (data) => {
+                        if (data.isSuccessful) {
+                            Vue.$messageUtil.success1(data.responseBody);
+                        }
+                        else {
+                            Vue.$messageUtil.error(data.responseBody);
+                        }
+                    });
+            }
+            ,
+            doBinding() {
+                let Vue = this;
+
+                let sendWay = 0;
+                let phoneOrEmail = null;
+
+                if (this.isBindingPhone) {
+                    sendWay = 1;
+                    phoneOrEmail = this.formData.phoneNumber;
+                }
+                else {
+                    if (this.isBindingEmail) {
+                        sendWay = 2;
+                        phoneOrEmail = this.formData.emailAddress;
+                    }
+                }
+                this.isLoading = true;
+                apiHandler.getRegisteredUserLoginedApi().bindingPhoneOrEmail({
+                    way: sendWay,
+                    phoneOrEmail: phoneOrEmail,
+                    verificationCode: Vue._data.formData.verificationCode
+                }, (data) => {
+                    if (data.isSuccessful) {
+                        Vue.$messageUtil.success(data.responseBody);
+                        switch (sendWay) {
+                            case 1:
+                                Vue.$store.commit('updatePhoneNumber', phoneOrEmail);
+                                break;
+                            case 2:
+                                Vue.$store.commit('updateEmailAddress', phoneOrEmail);
+                                break;
+                            default:
+                                break
+                        }
+
+                        Vue._data.isBindingPhone=false;
+                        Vue._data.isBindingEmail=false;
+
+                    }
+                    else {
+                        Vue.$messageUtil.error(data.responseBody);
+                    }
+                    Vue._data.isLoading = false;
+                });
             }
         }
     }
@@ -514,5 +597,10 @@
     .box-content {
         background-color: #ffffff;
         border-radius: 20px;
+    }
+
+    .reminder-text {
+        font-size: small;
+        color: rgba(52, 52, 52, 0.45);
     }
 </style>

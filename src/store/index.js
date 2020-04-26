@@ -16,16 +16,22 @@ const store = new Vuex.Store({
     },
     getters: {
         getSystemUser: (state) => {
-            let cacheSystemUserStr = sessionStorage.getItem("systemUser");
-            if (cacheSystemUserStr === null) {
-                return state.systemUser;
-            }
-            else {
-                return JSON.parse(cacheSystemUserStr);
-            }
+            return state.systemUser;
         }
     },
     mutations: {
+        initFromCache(state) {
+            let cacheSystemUserStr = sessionStorage.getItem("systemUser");
+            let systemUser = null;
+            if (cacheSystemUserStr !== null) {
+                systemUser = JSON.parse(cacheSystemUserStr);
+                state.systemUser = systemUser;
+            }
+        },
+        clearCache(state) {
+            state.systemUser={}
+            sessionStorage.removeItem("systemUser");
+        },
         loginSuccessfully(state, systemUser) {
             state.systemUser = systemUser;
             sessionStorage.setItem("systemUser", JSON.stringify(systemUser));
@@ -33,6 +39,14 @@ const store = new Vuex.Store({
         ,
         updateSurfaceImage(state, surfaceImage) {
             state.systemUser.surfaceImage = surfaceImage;
+            sessionStorage.setItem("systemUser", JSON.stringify(state.systemUser));
+        },
+        updatePhoneNumber(state, phoneNumber) {
+            state.systemUser.phoneNumber = phoneNumber;
+            sessionStorage.setItem("systemUser", JSON.stringify(state.systemUser));
+        },
+        updateEmailAddress(state, emailAddress) {
+            state.systemUser.emailAddress = emailAddress;
             sessionStorage.setItem("systemUser", JSON.stringify(state.systemUser));
         }
     }
