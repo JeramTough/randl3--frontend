@@ -1,16 +1,23 @@
 export default {
 
-    permissions: [],
-    permissionNameMap: [],
+    permissions: null,
 
     init: function (permissions) {
         this.permissions = permissions;
+        sessionStorage.setItem("permissions", JSON.stringify(permissions));
     }
 
     ,
+    getPermissions(){
+        if (this.permissions===null){
+            this.permissions=JSON.parse(sessionStorage.getItem("permissions"));
+        }
+        return this.permissions;
+    }
+    ,
 
     hasPermissionByApiId(apiId) {
-        for (let permission of this.permissions) {
+        for (let permission of this.getPermissions()) {
             if (permission.apiId === apiId) {
                 return true;
             }
@@ -21,7 +28,7 @@ export default {
 
     hasPermissionByApiAlias(apiAlias) {
 
-        for (let permission of this.permissions) {
+        for (let permission of this.getPermissions()) {
             if (permission.apiAlias === apiAlias) {
                 return true;
             }
