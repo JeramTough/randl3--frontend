@@ -182,7 +182,7 @@
                                 }, (data) => {
                                     if (data.isSuccessful) {
                                         Vue.$messageUtil.success1(data.responseBody.message);
-                                        Vue._data.registerForm.transactionId = data.responseBody.transactionId;
+                                        Vue._data.form.transactionId = data.responseBody.transactionId;
                                         Vue._data.steps++;
                                     }
                                     else {

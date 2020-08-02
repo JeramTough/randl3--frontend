@@ -140,7 +140,7 @@
 
                 let Vue = this;
                 if (this.roles == null) {
-                    apiHandler.getRoleApi().getAll(null, (data) => {
+                    apiHandler.getRoleApi().getAdminAll(null, (data) => {
                         if (data.isSuccessful) {
                             Vue._data.roles = data.responseBody;
                             this.refreshFormData();

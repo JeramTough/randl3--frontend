@@ -60,6 +60,11 @@
                     width="120">
             </el-table-column>
             <el-table-column
+                    prop="role.description"
+                    label="角色名"
+                    width="120">
+            </el-table-column>
+            <el-table-column
                     fixed="right"
                     label="操作"
                     width="120">
@@ -258,11 +263,11 @@
             ,
             onDialogDone(editedRegisteredUser) {
                 //更新的情况下
-                this.selectedEntity = editedRegisteredUser;
+                // this.selectedEntity = editedRegisteredUser;
                 this.selectedEntity.enabled = editedRegisteredUser.accountStatus === 1 ? '是' : '否';
-                /*Object.keys(editedRegisteredUser).forEach(key => {
+                Object.keys(editedRegisteredUser).forEach(key => {
                     this.selectedEntity[key] = editedRegisteredUser[key];
-                });*/
+                });
             }
         },
     }

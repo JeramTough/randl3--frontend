@@ -13,6 +13,12 @@ export default {
     getAll(params, caller) {
         randl2HttpClient.get(BASE + "/all", params, caller);
     },
+    getAdminAll(params, caller) {
+        randl2HttpClient.get(BASE + "/adminAll", params, caller);
+    },
+    getUserAll(params, caller) {
+        randl2HttpClient.get(BASE + "/userAll", params, caller);
+    },
     add(data, caller) {
         randl2HttpClient.post(BASE + "/add", data, caller);
     },

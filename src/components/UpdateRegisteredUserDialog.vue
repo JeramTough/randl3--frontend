@@ -23,6 +23,15 @@
                     <el-input v-model="formData.emailAddress" autocomplete="off"
                               @input="onFormChanged"></el-input>
                 </el-form-item>
+
+                <el-form-item label="角色选择" :label-width="formLabelWidth" style="text-align: left">
+                    <el-select v-model="formData.roleId" placeholder="角色拥有相应权限"
+                               @change="onFormChanged">
+                        <el-option v-for="item in roles" :label="item.description" :key="item.fid"
+                                   :value="item.fid"/>
+                    </el-select>
+                </el-form-item>
+
                 <el-form-item v-show="dataSource!=null" label="是否可用" :label-width="formLabelWidth">
                     <el-switch v-model="isEnabled" @change="onFormChanged"></el-switch>
                 </el-form-item>
@@ -61,6 +70,7 @@
                     phoneNumber: null,
                     emailAddress: null,
                     accountStatus: null,
+                    roleId:null
                 },
                 isFormChanged: false,
                 isProcessingOption: false
@@ -113,8 +123,20 @@
             }
             ,
             onOpened: function () {
+                let Vue=this;
                 this.isFormChanged = false;
-                this.refreshFormData();
+                if (this.roles == null) {
+                    apiHandler.getRoleApi().getUserAll(null, (data) => {
+                        if (data.isSuccessful) {
+                            Vue._data.roles = data.responseBody;
+                            this.refreshFormData();
+                        } else {
+                            Vue.$messageUtil.error(data.responseBody);
+                        }
+                    });
+                } else {
+                    this.refreshFormData();
+                }
             },
             refreshFormData() {
                 this.formData.uid = this.dataSource.uid;
@@ -122,13 +144,25 @@
                 this.formData.phoneNumber = this.dataSource.phoneNumber;
                 this.formData.emailAddress = this.dataSource.emailAddress;
                 this.formData.accountStatus = this.dataSource.accountStatus;
+                this.formData.roleId = this.dataSource.role.fid;
                 this.formData.password = null;
             },
             handleDoneEvent() {
                 let registeredUser = {};
+
+                let selectRole=null;
+                for (let role of this.roles){
+                    if (role.fid===this.formData.roleId){
+                        selectRole=role;
+                        break;
+                    }
+                }
+                registeredUser.role=selectRole;
+
                 Object.keys(this.formData).forEach(key => {
                     registeredUser[key] = this.formData[key];
                 });
+
                 this.$emit('done', registeredUser);
             }
             ,

@@ -195,6 +195,16 @@
             },
             handleDoneEvent() {
                 let systemUser = {};
+
+                let selectRole=null;
+                for (let role of this.roles){
+                    if (role.fid===this.formData.roleId){
+                        selectRole=role;
+                        break;
+                    }
+                }
+                systemUser.role=selectRole;
+
                 Object.keys(this.formData).forEach(key => {
                     systemUser[key] = this.formData[key];
                 });
