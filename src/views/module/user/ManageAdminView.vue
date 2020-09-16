@@ -103,7 +103,7 @@
 
 <script>
     import apiHandler from "@/api/base/ApiHandler";
-    import AUdialog from "@/components/AddOrUpdateAdminUserDialog.vue";
+    import AUdialog from "@/components/dialog/AddOrUpdateAdminUserDialog.vue";
 
     export default {
         name: "ManageAdminUserView",

@@ -74,24 +74,11 @@
                     apiHandler.getAdminUserApi().login(this.userCredentials, function (data) {
                         if (data.isSuccessful) {
                             let systemUser = data.responseBody;
-                            //获取用户权限
-                            apiHandler.getPermissionApi().getByRoleId({roleId: systemUser.role.fid}, (data) => {
-                                if (data.isSuccessful) {
-                                    //保存用户登录成功数据
-                                    Vue.$store.commit('loginSuccessfully', systemUser);
-                                    //初始化权限
-                                    permissionHandler.init(data.responseBody);
-                                    //初始化菜单
-                                    menuNoteHandler.init(systemUser);
-                                    //跳转
-                                    Vue.$messageUtil.success("【" + systemUser.username + "】登录成功！");
-                                    Vue.$router.push({path: '/Layout'});
-                                }
-                                else {
-                                    Vue.$messageUtil.error(data.responseBody);
-                                }
-                                Vue._data.isLogining = false;
-                            });
+                            //保存用户登录成功数据
+                            Vue.$store.commit('loginSuccessfully', systemUser);
+                            //跳转
+                            Vue.$messageUtil.success("【" + systemUser.username + "】登录成功！");
+                            Vue.$router.push({path: '/Layout'});
 
                         }
                         else {

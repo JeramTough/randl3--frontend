@@ -88,7 +88,7 @@
 
 <script>
     import apiHandler from "@/api/base/ApiHandler";
-    import AUdialog from "@/components/AddOrUpdateRoleDialog.vue";
+    import AUdialog from "@/components/dialog/AddOrUpdateRoleDialog.vue";
 
     export default {
         name: "RoleView",

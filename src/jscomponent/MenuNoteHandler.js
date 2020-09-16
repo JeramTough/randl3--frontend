@@ -67,12 +67,12 @@ export default {
                     ]
             },
         ];
-        sessionStorage.setItem("menuNotes",JSON.stringify(this.menuNotes));
+        sessionStorage.setItem("menuNotes", JSON.stringify(this.menuNotes));
     },
 
     getNotes: function () {
-        if (this.menuNotes===null){
-            this.menuNotes=JSON.parse(sessionStorage.getItem("menuNotes"));
+        if (this.menuNotes === null) {
+            this.menuNotes = JSON.parse(sessionStorage.getItem("menuNotes"));
         }
         return this.menuNotes;
     }

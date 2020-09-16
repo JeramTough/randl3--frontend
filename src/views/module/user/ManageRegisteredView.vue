@@ -10,8 +10,7 @@
                             <el-input v-model="searchParameter.keyword" placeholder="账号名,手机号,邮箱"></el-input>
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="primary" icon="el-icon-search" @click="queryByKeyword"
-                                       v-bind:disabled="permissionHandler.dontHavePermissionByApiAlias('PUYH-GJZCX')">查询
+                            <el-button type="primary" icon="el-icon-search" @click="queryByKeyword">查询
                             </el-button>
                         </el-form-item>
                     </el-form>
@@ -72,23 +71,20 @@
                     <el-button
                             @click.native.prevent="deleteRow(scope.$index, tableData)"
                             type="text"
-                            size="small"
-                            v-bind:disabled="permissionHandler.dontHavePermissionByApiAlias('PUYH-SCZH')">
+                            size="small">
                         删除
                     </el-button>
 
                     <el-button
                             @click.native.prevent="updateRow(scope.$index, tableData)"
                             type="text"
-                            size="small"
-                            v-bind:disabled="permissionHandler.dontHavePermissionByApiAlias('PUYH-ZHXXXG')">
+                            size="small">
                         修改
                     </el-button>
                     <el-button
                             @click.native.prevent="updateRowForPersonalInfo(scope.$index, tableData)"
                             type="text"
-                            size="small"
-                            v-bind:disabled="permissionHandler.dontHavePermissionByApiAlias('PUYH-GRXXXG')">
+                            size="small">
                         编辑资料
                     </el-button>
                 </template>
@@ -120,9 +116,8 @@
 
 <script>
     import apiHandler from "@/api/base/ApiHandler";
-    import permissionHandler from '@/jscomponent/PermissionHanlder';
-    import AUdialog from "@/components/UpdateRegisteredUserDialog.vue";
-    import UPdialog from "@/components/UpdatePersonalInfoDialog.vue";
+    import AUdialog from "@/components/dialog/UpdateRegisteredUserDialog.vue";
+    import UPdialog from "@/components/dialog/UpdatePersonalInfoDialog.vue";
 
     export default {
         name: "ManageRegisteredUserView",
@@ -162,7 +157,6 @@
                     keyword: ''
                 },
                 selectedEntity: null,
-                permissionHandler: permissionHandler
             }
         }
         ,

@@ -93,7 +93,7 @@
 
 <script>
     import apiHandler from "@/api/base/ApiHandler";
-    import AUdialog from "@/components/AddOrUpdateApiDialog.vue";
+    import AUdialog from "@/components/dialog/AddOrUpdateApiDialog.vue";
 
     export default {
         name: "InterfaceView",

@@ -52,7 +52,6 @@ const routePaths = [
                     role_view: () => import('@/views/module/permission/RoleView.vue'),
                     allocation_view: () => import('@/views/module/permission/AllocationView.vue')
                 },
-                //component: () => import('@/views/TestView.vue')
             }
         ]
     },

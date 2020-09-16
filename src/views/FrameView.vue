@@ -1,5 +1,6 @@
 <template>
-    <el-container v-if="menuNotes!=null">
+    <el-container v-if="menuStructure!=null">
+
         <!--侧边菜单Start-->
         <el-menu default-active="0" class="el-menu-vertical-demo"
                  @select="onMenuSelected"
@@ -9,38 +10,44 @@
                  active-text-color="#ffd04b">
 
             <div style="background: #168825">
-                <el-image
-                        fit="fill" :src="logoUrl"></el-image>
+                <el-image fit="fill" :src="logoUrl"></el-image>
             </div>
 
 
-            <div v-for="menuNote in menuNotes" :key="menuNote.index">
+
+            <div v-for="(subMenuStructure,index1) in menuStructure.subs" :key="subMenuStructure.value.fid">
 
                 <!--没有子菜单的菜单项-->
-                <el-menu-item v-if="menuNote.children==null&&menuNote.isAble!==false" :index="menuNote.index">
-                    <i :class="menuNote.iconClass"></i>
-                    <span slot="title" class="menu-title">{{menuNote.title}}</span>
+                <el-menu-item v-if="subMenuStructure.subs.length==0"
+                              :disabled="!subMenuStructure.value.isAble"
+                              :index="index1.toString()">
+                    <i :class="subMenuStructure.value.icon"></i>
+                    <span slot="title" class="menu-title">{{subMenuStructure.value.description}}</span>
                 </el-menu-item>
 
                 <!--有子菜单的菜单项-->
-                <el-submenu v-if="menuNote.children!=null&&menuNote.isAble!==false" :index="menuNote.index">
+                <el-submenu v-if="subMenuStructure.subs.length>0"
+                            :index="index1.toString()">
+
                     <template slot="title">
-                        <i :class="menuNote.iconClass"></i>
-                        <span slot="title" class="menu-title">{{menuNote.title}}</span>
+                        <i :class="subMenuStructure.value.icon"></i>
+                        <span slot="title" class="menu-title">{{subMenuStructure.value.description}}</span>
                     </template>
+
                     <el-menu-item-group>
                         <el-menu-item
-                                v-for="childrenMenuNote in menuNote.children" :index="childrenMenuNote.index"
-                                v-show="childrenMenuNote.isAble!==false">
-                            {{childrenMenuNote.title}}
+                                v-for="(subMenuStructureTwo,index2) in subMenuStructure.subs"
+                                :disabled="!subMenuStructureTwo.value.isAble"
+                                :index="index1+'-'+index2">
+                            {{subMenuStructureTwo.value.description}}
                         </el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
             </div>
 
-
         </el-menu>
         <!--侧边菜单End-->
+
 
         <el-container>
             <!--头布局-->
@@ -56,7 +63,7 @@
                         <el-col :span="14">
                             <div style="color: #000000;font-size: small;margin-left: 3px;margin-right: 3px;text-align: left;">
                                 <span v-for="item in menuDataQueue" v-bind:key="item.index">
-                                    /&nbsp;{{ item.title }}
+                                    /&nbsp;{{ item.description }}
                                 </span>
                             </div>
                         </el-col>
@@ -80,11 +87,11 @@
                          @tab-click="onTabSelected">
                     <el-tab-pane
                             v-for="(item, index) in tabViewDataList"
-                            :key="item.viewName"
-                            :label="item.title"
-                            :name="item.viewName">
+                            :key="item.name"
+                            :label="item.description"
+                            :name="item.name">
 
-                        <router-view :name="item.viewName"></router-view>
+                        <router-view :name="item.path"></router-view>
 
                     </el-tab-pane>
 
@@ -120,7 +127,7 @@
 </style>
 
 <script>
-    import StatusButton from '@/components/StatusButton.vue';
+    import StatusButton from '@/components/button/StatusButton.vue';
     import menuNoteHandler from '@/jscomponent/MenuNoteHandler';
 
 
@@ -129,13 +136,17 @@
 
         components: {
             "my-status-button": StatusButton
-        },
+        }
+        ,
         mounted: function () {
+            //从浏览器缓存里恢复登录状态
             this.$store.commit('initFromCache');
+
+            this.menuStructure = this.$store.state.systemUser.menu;
 
             this.menuNotes = menuNoteHandler.getNotes();
             //默认第一个菜单被选中
-            this.onMenuSelected("0", 1);
+            // this.onMenuSelected("0", 1);
         }
         ,
         data() {
@@ -148,6 +159,7 @@
                 //当前选中的菜单队列数据
                 menuDataQueue: [],
                 menuNotes: null,
+                menuStructure: null
             }
         }
         ,
@@ -158,19 +170,22 @@
 
             onMenuSelected(index, indexPath) {
                 this.menuDataQueue = this.getMenuDataQueue(index);
+
+                //取到队列最后的数据，也就是即将要被添加的数据
                 let menuData = this.menuDataQueue[this.menuDataQueue.length - 1];
+                //如果这个选项卡没有添加过才添加
                 let isAddable = true;
                 this.tabViewDataList.forEach(tabViewData => {
-                    if (tabViewData.viewName === menuData.viewName) {
+                    if (tabViewData.name === menuData.name) {
                         isAddable = false;
                     }
                 });
                 if (isAddable) {
+                    menuData.index=index;
                     this.addTabView(menuData);
                 }
-                else {
-                    this.currentTabName = menuData.viewName;
-                }
+                //根据currentTabName去找相应的View视图
+                this.currentTabName = menuData.name;
             }
             ,
             onTabSelected(tab) {
@@ -180,7 +195,6 @@
 
             addTabView(menuData) {
                 this.tabViewDataList.push(menuData);
-                this.currentTabName = menuData.viewName;
             },
 
             removeTab(targetName) {
@@ -191,24 +205,25 @@
                         if (tab.viewName === targetName) {
                             let nextTab = tabs[index + 1] || tabs[index - 1];
                             if (nextTab) {
-                                activeName = nextTab.viewName;
+                                activeName = nextTab.name;
                             }
                         }
                     });
                 }
 
                 this.currentTabName = activeName;
-                this.tabViewDataList = tabs.filter(tab => tab.viewName !== targetName);
+                this.tabViewDataList = tabs.filter(tab => tab.name !== targetName);
             }
             ,
             getMenuDataQueue: function (index) {
                 let indexs = index.split("-");
                 let menuDataQueue = [];
-                let menuTree = this.menuNotes;
+                let menuStructures = this.menuStructure.subs;
+
                 indexs.forEach((value) => {
-                    let menuData = menuTree[Number(value)];
+                    let menuData = menuStructures[Number(value)].value;
                     menuDataQueue.push(menuData);
-                    menuTree = menuData.children;
+                    menuStructures = menuStructures[Number(value)].subs;
                 });
 
                 return menuDataQueue;

@@ -40,7 +40,7 @@
 </template>
 
 <script>
-    import UpateAdminDialog from "@/components/UpdateAdminUserDialog.vue";
+    import UpateAdminDialog from "@/components/dialog/UpdateAdminUserDialog.vue";
 
     export default {
         name: "UserFrameView",
