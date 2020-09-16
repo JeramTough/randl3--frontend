@@ -50,7 +50,9 @@ const routePaths = [
                     registered_user_view: () => import('@/views/module/user/ManageRegisteredView.vue'),
                     interface_view: () => import('@/views/module/permission/InterfaceView.vue'),
                     role_view: () => import('@/views/module/permission/RoleView.vue'),
-                    allocation_view: () => import('@/views/module/permission/AllocationView.vue')
+                    allocation_view: () => import('@/views/module/permission/AllocationView.vue'),
+                    system_menu_view: () => import('@/views/module/systemsetting/SystemMenuView.vue'),
+                    operation_log_view: () => import('@/views/module/systemsetting/OperationLogView.vue'),
                 },
             }
         ]

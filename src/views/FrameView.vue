@@ -146,7 +146,7 @@
 
             this.menuNotes = menuNoteHandler.getNotes();
             //默认第一个菜单被选中
-            // this.onMenuSelected("0", 1);
+            this.onMenuSelected("0", null);
         }
         ,
         data() {
@@ -202,7 +202,7 @@
                 let activeName = this.currentTabName;
                 if (activeName === targetName) {
                     tabs.forEach((tab, index) => {
-                        if (tab.viewName === targetName) {
+                        if (tab.name === targetName) {
                             let nextTab = tabs[index + 1] || tabs[index - 1];
                             if (nextTab) {
                                 activeName = nextTab.name;
