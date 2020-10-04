@@ -69,17 +69,10 @@
                     width="120">
                 <template slot-scope="scope">
                     <el-button
-                            @click.native.prevent="deleteRow(scope.$index, tableData)"
+                            @click.native.prevent="updateRowForPersonalInfo(scope.$index, tableData)"
                             type="text"
                             size="small">
-                        删除
-                    </el-button>
-
-                    <el-button
-                            @click.native.prevent="updateRow(scope.$index, tableData)"
-                            type="text"
-                            size="small">
-                        修改
+                        编辑资料
                     </el-button>
                 </template>
             </el-table-column>
@@ -100,8 +93,7 @@
         <el-divider/>
 
         <!--对话框控件-->
-        <my-au-dialog :data-source="selectedEntity" :visible.sync="dialogVisible" :title="dialogTitle"
-                      v-on:done="onDialogDone"/>
+        <my-up-dialog :data-source="selectedEntity" :visible.sync="dialogVisible2" :title="'编辑用户个人信息'"/>
     </div>
 
 </template>
@@ -114,7 +106,7 @@
     export default {
         name: "ManageRegisteredUserView",
         components: {
-            "my-au-dialog": AUdialog,
+            "my-up-dialog": UPdialog
         },
         mounted: function () {
             this.obtainTableData();
@@ -238,21 +230,6 @@
             updateRowForPersonalInfo(index, rows) {
                 this.selectedEntity = rows[index];
                 this.dialogVisible2 = true;
-            }
-            ,
-            addRow() {
-                this.dialogTitle = "添加新账号";
-                this.dialogVisible = true;
-                this.selectedEntity = null;
-            }
-            ,
-            onDialogDone(editedRegisteredUser) {
-                //更新的情况下
-                // this.selectedEntity = editedRegisteredUser;
-                this.selectedEntity.enabled = editedRegisteredUser.accountStatus === 1 ? '是' : '否';
-                Object.keys(editedRegisteredUser).forEach(key => {
-                    this.selectedEntity[key] = editedRegisteredUser[key];
-                });
             }
         },
     }

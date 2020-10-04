@@ -46,8 +46,6 @@
 <script>
 
     import apiHandler from "@/api/base/ApiHandler";
-    import menuNoteHandler from '@/jscomponent/MenuNoteHandler';
-    import permissionHandler from '@/jscomponent/PermissionHanlder';
 
     const srcImages = {
         mIcon: require("@/assets/images/manager_icon.png")
@@ -79,7 +77,6 @@
                             //跳转
                             Vue.$messageUtil.success("【" + systemUser.username + "】登录成功！");
                             Vue.$router.push({path: '/Layout'});
-
                         }
                         else {
                             Vue.$messageUtil.error(data.responseBody);

@@ -14,19 +14,18 @@
             </div>
 
 
-
-            <div v-for="(subMenuStructure,index1) in menuStructure.subs" :key="subMenuStructure.value.fid">
+            <div v-for="(moduleAuth,index1) in moduleAuthList" :key="moduleAuth.mid">
 
                 <!--没有子菜单的菜单项-->
-                <el-menu-item v-if="subMenuStructure.subs.length==0"
-                              :disabled="!subMenuStructure.value.isAble"
+                <el-menu-item v-if="!moduleAuth.hasChildren"
+                              :disabled="!moduleAuth.isAble"
                               :index="index1.toString()">
-                    <i :class="subMenuStructure.value.icon"></i>
-                    <span slot="title" class="menu-title">{{subMenuStructure.value.description}}</span>
+                    <i :class="moduleAuth.icon"></i>
+                    <span slot="title" class="menu-title">{{moduleAuth.name}}</span>
                 </el-menu-item>
 
                 <!--有子菜单的菜单项-->
-                <el-submenu v-if="subMenuStructure.subs.length>0"
+                <!--<el-submenu v-if="subMenuStructure.subs.length>0"
                             :index="index1.toString()">
 
                     <template slot="title">
@@ -42,7 +41,7 @@
                             {{subMenuStructureTwo.value.description}}
                         </el-menu-item>
                     </el-menu-item-group>
-                </el-submenu>
+                </el-submenu>-->
             </div>
 
         </el-menu>
@@ -105,30 +104,9 @@
     </el-container>
 </template>
 
-<style scoped>
-    .el-menu {
-        text-align: left;
-        font-weight: bolder;
-    }
-
-    .menu-title {
-        font-size: larger;
-    }
-
-    .el-menu-vertical-demo:not(.el-menu--collapse) {
-        width: 200px;
-        min-height: 400px;
-    }
-
-    .menu-icon {
-        color: #ffffff;
-        font-weight: bold;
-    }
-</style>
 
 <script>
     import StatusButton from '@/components/button/StatusButton.vue';
-    import menuNoteHandler from '@/jscomponent/MenuNoteHandler';
 
 
     export default {
@@ -142,9 +120,9 @@
             //从浏览器缓存里恢复登录状态
             this.$store.commit('initFromCache');
 
-            this.menuStructure = this.$store.state.systemUser.menu;
+            //模块授权信息
+            this.moduleAuthList = this.$store.state.systemUser.moduleAuthList;
 
-            this.menuNotes = menuNoteHandler.getNotes();
             //默认第一个菜单被选中
             this.onMenuSelected("0", null);
         }
@@ -158,8 +136,7 @@
                 tabViewDataList: [],
                 //当前选中的菜单队列数据
                 menuDataQueue: [],
-                menuNotes: null,
-                menuStructure: null
+                moduleAuthList: null
             }
         }
         ,
@@ -181,7 +158,7 @@
                     }
                 });
                 if (isAddable) {
-                    menuData.index=index;
+                    menuData.index = index;
                     this.addTabView(menuData);
                 }
                 //根据currentTabName去找相应的View视图
@@ -230,7 +207,30 @@
             }
         }
         ,
-        computed: {}
+        computed: {
+
+        }
     }
     ;
 </script>
+
+<style scoped>
+    .el-menu {
+        text-align: left;
+        font-weight: bolder;
+    }
+
+    .menu-title {
+        font-size: larger;
+    }
+
+    .el-menu-vertical-demo:not(.el-menu--collapse) {
+        width: 200px;
+        min-height: 400px;
+    }
+
+    .menu-icon {
+        color: #ffffff;
+        font-weight: bold;
+    }
+</style>

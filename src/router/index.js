@@ -46,13 +46,15 @@ const routePaths = [
                     user_fragment: () => import('@/views/frame/UserFragment.vue'),
                     //菜单模块
                     home_view: () => import('@/views/module/home/HomeView.vue'),
-                    admin_user_view: () => import('@/views/module/user/ManageAdminView.vue'),
+                    admin_user_view: () => import('@/views/module/systemsetting/ManageAdminView.vue'),
                     registered_user_view: () => import('@/views/module/user/ManageRegisteredView.vue'),
+                    personal_info_view: () => import('@/views/module/user/ManagePersonalInfoView.vue'),
                     interface_view: () => import('@/views/module/permission/InterfaceView.vue'),
                     role_view: () => import('@/views/module/permission/RoleView.vue'),
                     allocation_view: () => import('@/views/module/permission/AllocationView.vue'),
                     system_menu_view: () => import('@/views/module/systemsetting/SystemMenuView.vue'),
                     operation_log_view: () => import('@/views/module/systemsetting/OperationLogView.vue'),
+                    thirdparty_app_view: () => import('@/views/module/app/ManagerThirdpartyAppView.vue'),
                 },
             }
         ]
