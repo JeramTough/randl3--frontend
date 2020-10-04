@@ -6,8 +6,8 @@
             <el-col :span="18">
                 <div>
                     <el-form :inline="true" :model="searchParameter" class="demo-form-inline">
-                        <el-form-item label="按搜索">
-                            <el-input v-model="searchParameter.keyword" placeholder="帐号名,手机号,邮箱"></el-input>
+                        <el-form-item label="模糊搜索">
+                            <el-input v-model="searchParameter.keyword" placeholder="ID,接口路径值,描述"></el-input>
                         </el-form-item>
                         <el-form-item>
                             <el-button type="primary" icon="el-icon-search" @click="queryByKeyword">查询</el-button>
@@ -29,34 +29,24 @@
                 max-height="350">
             <el-table-column
                     fixed
-                    prop="username"
-                    label="帐号名"
-                    width="150">
+                    prop="fid"
+                    label="ID"
+                    width="80">
             </el-table-column>
             <el-table-column
-                    prop="phoneNumber"
-                    label="手机号"
-                    width="120">
+                    prop="path"
+                    label="路径值"
+                    width="300">
             </el-table-column>
             <el-table-column
-                    prop="emailAddress"
-                    label="邮箱地址"
-                    width="150">
+                    prop="alias"
+                    label="接口别名"
+                    width="250">
             </el-table-column>
             <el-table-column
-                    prop="registrationTime"
-                    label="注册时间"
+                    prop="description"
+                    label="接口描述"
                     width="200">
-            </el-table-column>
-            <el-table-column
-                    prop="role.description"
-                    label="角色名"
-                    width="120">
-            </el-table-column>
-            <el-table-column
-                    prop="enabled"
-                    label="是否可用"
-                    width="120">
             </el-table-column>
             <el-table-column
                     fixed="right"
@@ -95,7 +85,7 @@
         <el-divider/>
 
         <!--对话框控件-->
-        <my-au-dialog :data-source="selectedAdminUser" :visible.sync="dialogVisible" :title="dialogTitle"
+        <my-au-dialog :data-source="selectedApi" :visible.sync="dialogVisible" :title="dialogTitle"
                       v-on:done="onDialogDone"/>
     </div>
 
@@ -103,10 +93,11 @@
 
 <script>
     import apiHandler from "@/api/base/ApiHandler";
-    import AUdialog from "@/components/dialog/AddOrUpdateAdminUserDialog.vue";
+    import AUdialog from "@/components/dialog/AddOrUpdateApiDialog.vue";
 
     export default {
-        name: "ManageAdminUserView",
+        name: "ManagerApiView",
+
         components: {
             "my-au-dialog": AUdialog
         },
@@ -140,7 +131,7 @@
                 searchParameter: {
                     keyword: ''
                 },
-                selectedAdminUser: null
+                selectedApi: null
             }
         }
         ,
@@ -157,18 +148,14 @@
             obtainTableData() {
                 this.isLoading = true;
                 let Vue = this;
-                apiHandler.getAdminUserApi().getByPage({
+                apiHandler.getApiInfoApi().getByPage({
                     index: this.currentPageIndex,
                     size: this.currentPageSize
                 }, function (data) {
                     if (data.isSuccessful) {
                         let pageData = data.responseBody;
                         Vue._data.isLoading = false;
-                        for (let item of pageData.list) {
-                            item.enabled = item.accountStatus === 1 ? '是' : '否';
-                        }
                         Vue._data.tableData = pageData.list;
-
                     }
                     else {
                         Vue.$message({
@@ -188,9 +175,9 @@
             queryByKeyword() {
                 let Vue = this;
                 if (this.searchParameter.keyword.length > 0) {
-                    apiHandler.getAdminUserApi().byKeyword({keyword: this.searchParameter.keyword}, (data) => {
+                    apiHandler.getApiInfoApi().byKeyword({keyword: this.searchParameter.keyword}, (data) => {
                         if (data.isSuccessful) {
-                            Vue._data.tableData = [data.responseBody];
+                            Vue._data.tableData = data.responseBody;
                         }
                         else {
                             Vue.$messageUtil.error(data.responseBody);
@@ -204,12 +191,11 @@
 
             },
             deleteRow(index, rows) {
-                let uid = rows[index].uid;
-                this.isLoading = true;
-                let Vue = this;
-                this.$messageUtil.sureDialog("是否要删除该管理员账号【" +
-                    rows[index].username + "】", () => {
-                    apiHandler.getAdminUserApi().remove({uid: uid}, (data) => {
+                this.$messageUtil.sureDialog("是否删除该接口？",()=>{
+                    let fid = rows[index].fid;
+                    this.isLoading = true;
+                    let Vue = this;
+                    apiHandler.getApiInfoApi().remove({fid: fid}, (data) => {
                         if (data.isSuccessful) {
                             Vue.$messageUtil.success(data.responseBody);
                             rows.splice(index, 1);
@@ -223,28 +209,27 @@
             }
             ,
             updateRow(index, rows) {
-                this.dialogTitle = "修改账号信息";
+                this.dialogTitle = "修改接口信息";
                 this.dialogVisible = true;
-                this.selectedAdminUser = rows[index];
+                this.selectedApi = rows[index];
             }
             ,
             addRow() {
-                this.dialogTitle = "添加新账号";
+                this.dialogTitle = "添加新接口";
                 this.dialogVisible = true;
-                this.selectedAdminUser = null;
+                this.selectedApi = null;
             }
             ,
-            onDialogDone(editedSystemUser) {
+            onDialogDone(editedApi) {
 
-                if (editedSystemUser.uid == null) {
+                if (editedApi.fid == null) {
                     //新增的情况下
                     this.obtainTableData();
                 }
                 else {
                     //更新的情况下
-                    this.selectedAdminUser.enabled = editedSystemUser.accountStatus === 1 ? '是' : '否';
-                    Object.keys(editedSystemUser).forEach(key => {
-                        this.selectedAdminUser[key] = editedSystemUser[key];
+                    Object.keys(editedApi).forEach(key => {
+                        this.selectedApi[key] = editedApi[key];
                     });
                 }
             }

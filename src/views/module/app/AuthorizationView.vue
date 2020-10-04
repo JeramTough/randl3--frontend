@@ -53,7 +53,7 @@
     import apiHandler from "@/api/base/ApiHandler";
 
     export default {
-        name: "AllocationView",
+        name: "AuthorizationView",
         created: function () {
             this.refreshData();
         },

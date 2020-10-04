@@ -1,10 +1,10 @@
 <template>
-    <div>系统菜单</div>
+    <div>用户角色映射</div>
 </template>
 
 <script>
     export default {
-        name: "SystemMenuView"
+        name: "ManageUserRoleMapView"
     }
 </script>
 

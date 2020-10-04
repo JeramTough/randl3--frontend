@@ -3,22 +3,32 @@
     <div>
 
         <el-row>
-            <el-col :span="18">
+            <el-col :span="21">
                 <div>
                     <el-form :inline="true" :model="searchParameter" class="demo-form-inline">
-                        <el-form-item label="模糊搜索">
-                            <el-input v-model="searchParameter.keyword" placeholder="ID,接口路径值,描述"></el-input>
+                        <el-form-item label="关键字">
+                            <el-input style="min-width: 250px"
+                                      v-model="searchParameter.keyword" placeholder="模糊搜索(账号名,手机号,邮箱...)"></el-input>
+                        </el-form-item>
+                        <el-form-item label="注册时间">
+                            <el-date-picker
+                                    v-model="searchParameter.registerDateRange"
+                                    type="daterange"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期">
+                            </el-date-picker>
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="primary" icon="el-icon-search" @click="queryByKeyword">查询</el-button>
+                            <el-button type="primary" icon="el-icon-search" @click="queryByKeyword">查询
+                            </el-button>
                         </el-form-item>
                     </el-form>
                 </div>
             </el-col>
-            <el-col :span="6">
+            <el-col :span="3">
                 <el-button type="primary" icon="el-icon-refresh" size="small" round @click="obtainTableData">刷新
                 </el-button>
-                <el-button type="primary" icon="el-icon-plus" size="small" round @click="addRow">新增</el-button>
             </el-col>
         </el-row>
 
@@ -29,25 +39,58 @@
                 max-height="350">
             <el-table-column
                     fixed
-                    prop="fid"
+                    prop="uid"
                     label="ID"
-                    width="80">
+                    width="50">
             </el-table-column>
             <el-table-column
-                    prop="path"
-                    label="路径值"
-                    width="300">
+                    prop="account"
+                    label="帐号名"
+                    width="120">
             </el-table-column>
             <el-table-column
-                    prop="alias"
-                    label="接口别名"
-                    width="250">
+                    prop="phoneNumber"
+                    label="手机号"
+                    width="120">
             </el-table-column>
             <el-table-column
-                    prop="description"
-                    label="接口描述"
+                    prop="emailAddress"
+                    label="邮箱地址"
+                    width="150">
+            </el-table-column>
+            <el-table-column
+                    prop="registrationTime"
+                    label="注册时间"
                     width="200">
             </el-table-column>
+
+            <el-table-column
+                    prop="registrationIp"
+                    label="注册IP"
+                    width="150">
+            </el-table-column>
+
+            <el-table-column
+                    prop="channelName"
+                    label="注册渠道"
+                    width="150">
+            </el-table-column>
+
+            <el-table-column
+                    label="是否可用"
+                    width="120">
+                <template slot-scope="scope">
+                    <!--<el-popover trigger="hover" placement="top">
+                        <p>姓名: {{ scope.row.name }}</p>
+                        <p>住址: {{ scope.row.address }}</p>
+                        <div slot="reference" class="name-wrapper">
+                            <el-tag size="medium">{{ scope.row.name }}</el-tag>
+                        </div>
+                    </el-popover>-->
+                    <el-switch v-model="tableData[scope.$index].enabled"/>
+                </template>
+            </el-table-column>
+
             <el-table-column
                     fixed="right"
                     label="操作"
@@ -85,7 +128,7 @@
         <el-divider/>
 
         <!--对话框控件-->
-        <my-au-dialog :data-source="selectedApi" :visible.sync="dialogVisible" :title="dialogTitle"
+        <my-au-dialog :data-source="selectedEntity" :visible.sync="dialogVisible" :title="dialogTitle"
                       v-on:done="onDialogDone"/>
     </div>
 
@@ -93,13 +136,13 @@
 
 <script>
     import apiHandler from "@/api/base/ApiHandler";
-    import AUdialog from "@/components/dialog/AddOrUpdateApiDialog.vue";
+    import AUdialog from "@/components/dialog/UpdateRegisteredUserDialog.vue";
+    import UPdialog from "@/components/dialog/UpdatePersonalInfoDialog.vue";
 
     export default {
-        name: "InterfaceView",
-
+        name: "ManageRegisteredUserView",
         components: {
-            "my-au-dialog": AUdialog
+            "my-au-dialog": AUdialog,
         },
         mounted: function () {
             this.obtainTableData();
@@ -113,6 +156,7 @@
                 isLoading: false,
 
                 dialogVisible: false,
+                dialogVisible2: false,
 
                 dialogTitle: "",
                 /**
@@ -129,9 +173,10 @@
                 tableData: []
                 ,
                 searchParameter: {
-                    keyword: ''
+                    keyword: '',
+                    registerDateRange:null
                 },
-                selectedApi: null
+                selectedEntity: null,
             }
         }
         ,
@@ -141,6 +186,9 @@
              */
             currentTotal: function () {
                 return this.tableData.length;
+            },
+            systemUser: function () {
+                return this.$store.state.systemUser;
             }
         }
         ,
@@ -148,20 +196,34 @@
             obtainTableData() {
                 this.isLoading = true;
                 let Vue = this;
-                apiHandler.getApiInfoApi().getByPage({
+                apiHandler.getRandlUserApi().getByPage({
                     index: this.currentPageIndex,
                     size: this.currentPageSize
                 }, function (data) {
                     if (data.isSuccessful) {
                         let pageData = data.responseBody;
                         Vue._data.isLoading = false;
+                        //是视图化数据
+                        for (let item of pageData.list) {
+                            item.enabled = item.accountStatus != 0;
+                            if (item.channel == 0) {
+                                item.channelName = "0:管理员添加";
+                            }
+                            else if (item.channel == 1) {
+                                item.channelName = "1:用户注册";
+                            }
+                            else if (item.channel == 2) {
+                                item.channelName = "2:数据库添加";
+                            }
+                            else {
+                                item.channelName = "其他";
+                            }
+                        }
                         Vue._data.tableData = pageData.list;
+
                     }
                     else {
-                        Vue.$message({
-                            message: data.responseBody,
-                            type: 'error'
-                        });
+                        Vue.$messageUtil.error(data.responseBody);
                     }
                 });
             },
@@ -175,7 +237,7 @@
             queryByKeyword() {
                 let Vue = this;
                 if (this.searchParameter.keyword.length > 0) {
-                    apiHandler.getApiInfoApi().byKeyword({keyword: this.searchParameter.keyword}, (data) => {
+                    apiHandler.getUserApi().byKeyword({keyword: this.searchParameter.keyword}, (data) => {
                         if (data.isSuccessful) {
                             Vue._data.tableData = data.responseBody;
                         }
@@ -191,11 +253,12 @@
 
             },
             deleteRow(index, rows) {
-                this.$messageUtil.sureDialog("是否删除该接口？",()=>{
-                    let fid = rows[index].fid;
+                let uid = rows[index].uid;
+                let Vue = this;
+                this.$messageUtil.sureDialog("是否要删除该名注册用户" +
+                    "【" + rows[index].account + "】", () => {
                     this.isLoading = true;
-                    let Vue = this;
-                    apiHandler.getApiInfoApi().remove({fid: fid}, (data) => {
+                    apiHandler.getUserApi().remove({uid: uid}, (data) => {
                         if (data.isSuccessful) {
                             Vue.$messageUtil.success(data.responseBody);
                             rows.splice(index, 1);
@@ -209,30 +272,34 @@
             }
             ,
             updateRow(index, rows) {
-                this.dialogTitle = "修改接口信息";
+                this.dialogTitle = "修改账号信息";
+                this.selectedEntity = rows[index];
                 this.dialogVisible = true;
-                this.selectedApi = rows[index];
+            }
+            ,
+            updateRowForPersonalInfo(index, rows) {
+                this.selectedEntity = rows[index];
+                this.dialogVisible2 = true;
             }
             ,
             addRow() {
-                this.dialogTitle = "添加新接口";
+                this.dialogTitle = "添加新账号";
                 this.dialogVisible = true;
-                this.selectedApi = null;
+                this.selectedEntity = null;
             }
             ,
-            onDialogDone(editedApi) {
-
-                if (editedApi.fid == null) {
-                    //新增的情况下
-                    this.obtainTableData();
-                }
-                else {
-                    //更新的情况下
-                    Object.keys(editedApi).forEach(key => {
-                        this.selectedApi[key] = editedApi[key];
-                    });
-                }
+            onDialogDone(editedRegisteredUser) {
+                //更新的情况下
+                // this.selectedEntity = editedRegisteredUser;
+                this.selectedEntity.enabled = editedRegisteredUser.accountStatus === 1 ? '是' : '否';
+                Object.keys(editedRegisteredUser).forEach(key => {
+                    this.selectedEntity[key] = editedRegisteredUser[key];
+                });
             }
         },
     }
 </script>
+
+<style scoped>
+
+</style>

@@ -1,5 +1,5 @@
 <template>
-    <el-container v-if="menuStructure!=null">
+    <el-container v-if="moduleAuthList!=null">
 
         <!--侧边菜单Start-->
         <el-menu default-active="0" class="el-menu-vertical-demo"
@@ -7,7 +7,8 @@
                  :collapse="isCollapse"
                  background-color="#6fa55c"
                  text-color="#fff"
-                 active-text-color="#ffd04b">
+                 active-text-color="#ffd04b"
+                 :default-openeds="['1']">
 
             <div style="background: #168825">
                 <el-image fit="fill" :src="logoUrl"></el-image>
@@ -18,6 +19,7 @@
 
                 <!--没有子菜单的菜单项-->
                 <el-menu-item v-if="!moduleAuth.hasChildren"
+                              v-show="moduleAuth.isAuth"
                               :disabled="!moduleAuth.isAble"
                               :index="index1.toString()">
                     <i :class="moduleAuth.icon"></i>
@@ -25,23 +27,25 @@
                 </el-menu-item>
 
                 <!--有子菜单的菜单项-->
-                <!--<el-submenu v-if="subMenuStructure.subs.length>0"
+                <el-submenu v-if="moduleAuth.hasChildren"
+                            v-show="moduleAuth.isAuth"
                             :index="index1.toString()">
 
                     <template slot="title">
-                        <i :class="subMenuStructure.value.icon"></i>
-                        <span slot="title" class="menu-title">{{subMenuStructure.value.description}}</span>
+                        <i :class="moduleAuth.icon"></i>
+                        <span slot="title" class="menu-title">{{moduleAuth.name}}</span>
                     </template>
 
                     <el-menu-item-group>
                         <el-menu-item
-                                v-for="(subMenuStructureTwo,index2) in subMenuStructure.subs"
-                                :disabled="!subMenuStructureTwo.value.isAble"
+                                v-for="(subModuleAuth,index2) in moduleAuth.children"
+                                v-show="subModuleAuth.isAuth"
+                                :disabled="!subModuleAuth.isAble"
                                 :index="index1+'-'+index2">
-                            {{subMenuStructureTwo.value.description}}
+                            {{subModuleAuth.name}}
                         </el-menu-item>
                     </el-menu-item-group>
-                </el-submenu>-->
+                </el-submenu>
             </div>
 
         </el-menu>
@@ -62,7 +66,7 @@
                         <el-col :span="14">
                             <div style="color: #000000;font-size: small;margin-left: 3px;margin-right: 3px;text-align: left;">
                                 <span v-for="item in menuDataQueue" v-bind:key="item.index">
-                                    /&nbsp;{{ item.description }}
+                                    /&nbsp;{{ item.name }}
                                 </span>
                             </div>
                         </el-col>
@@ -86,8 +90,8 @@
                          @tab-click="onTabSelected">
                     <el-tab-pane
                             v-for="(item, index) in tabViewDataList"
-                            :key="item.name"
-                            :label="item.description"
+                            :key="item.mid"
+                            :label="item.name"
                             :name="item.name">
 
                         <router-view :name="item.path"></router-view>
@@ -158,6 +162,7 @@
                     }
                 });
                 if (isAddable) {
+                    //附上index属性
                     menuData.index = index;
                     this.addTabView(menuData);
                 }
@@ -192,24 +197,27 @@
                 this.tabViewDataList = tabs.filter(tab => tab.name !== targetName);
             }
             ,
+            /**
+             *
+             * 根据菜单序列号，取到菜单模块数据队列
+             *
+             */
             getMenuDataQueue: function (index) {
                 let indexs = index.split("-");
                 let menuDataQueue = [];
-                let menuStructures = this.menuStructure.subs;
+                let moduleAuthList = this.moduleAuthList;
 
-                indexs.forEach((value) => {
-                    let menuData = menuStructures[Number(value)].value;
+                indexs.forEach((i) => {
+                    let menuData = moduleAuthList[Number(i)];
                     menuDataQueue.push(menuData);
-                    menuStructures = menuStructures[Number(value)].subs;
+                    moduleAuthList = moduleAuthList[Number(i)].children;
                 });
 
                 return menuDataQueue;
             }
         }
         ,
-        computed: {
-
-        }
+        computed: {}
     }
     ;
 </script>

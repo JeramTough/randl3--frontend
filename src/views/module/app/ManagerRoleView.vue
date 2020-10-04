@@ -91,7 +91,7 @@
     import AUdialog from "@/components/dialog/AddOrUpdateRoleDialog.vue";
 
     export default {
-        name: "RoleView",
+        name: "ManagerRoleView",
 
         components: {
             "my-au-dialog": AUdialog

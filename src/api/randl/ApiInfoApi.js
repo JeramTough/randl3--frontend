@@ -1,11 +1,9 @@
-import {randl2HttpClient} from './base/HttpClient'
+import {randl2HttpClient} from '../base/HttpClient'
 
-const BASE = "/adminUser";
+const BASE = "/api";
 
 export default {
-    login: function (params, caller) {
-        randl2HttpClient.postWithParams(BASE + "/login", params, caller);
-    },
+
     getByPage(params, caller) {
         randl2HttpClient.get(BASE + "/page", params, caller);
     },
@@ -21,10 +19,8 @@ export default {
     update(data, caller) {
         randl2HttpClient.post(BASE + "/update", data, caller);
     },
-    updateCurrent(data, caller) {
-        randl2HttpClient.post(BASE + "/updateCurrent", data, caller);
-    },
     byKeyword(params, caller) {
         randl2HttpClient.get(BASE + "/byKeyword", params, caller);
     }
+
 };

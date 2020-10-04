@@ -1,10 +1,10 @@
 <template>
-    <div>ManagerThirdpartyAppView</div>
+    <div>模块管理</div>
 </template>
 
 <script>
     export default {
-        name: "ManagerThirdpartyAppView"
+        name: "ManagerModuleView"
     }
 </script>
 

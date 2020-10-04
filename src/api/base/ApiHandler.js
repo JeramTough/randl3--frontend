@@ -1,16 +1,21 @@
-import adminUserApi from "@/api/AdminUserApi";
-import roleApi from "@/api/RoleApi";
-import apiInfoApi from "@/api/ApiInfoApi";
-import permissionApi from "@/api/PermissionApi";
-import verificationCodeApi from "@/api/VerificationCodeApi";
-import registeredUserApi from "@/api/RegisteredUserApi";
-import registeredUserLoginedApi from "@/api/RegisteredUserLoginedApi";
-import personalInfoApi from "@/api/PersonalInfoApi";
-import surfaceImageApi from "@/api/SurfaceImageApi";
+import adminLoginApi from "@/api/randl/AdminLoginApi";
+import randlUser1Api from "@/api/randl/RandlUser1Api";
+import randlUserApi from "@/api/randl/RandlUserApi";
+
+import roleApi from "@/api/randl/RoleApi";
+import apiInfoApi from "@/api/randl/ApiInfoApi";
+import permissionApi from "@/api/randl/PermissionApi";
+import verificationCodeApi from "@/api/randl/VerificationCodeApi";
+import registeredUserLoginedApi from "@/api/randl/RegisteredUserLoginedApi";
+import personalInfoApi from "@/api/randl/PersonalInfoApi";
+import surfaceImageApi from "@/api/randl/SurfaceImageApi";
 
 let apiHandler = {
-    getAdminUserApi: function () {
-        return adminUserApi;
+    getAdminLoginApi: function () {
+        return adminLoginApi;
+    },
+    getRandlUserApi: function () {
+        return randlUserApi;
     },
     getRoleApi: function () {
         return roleApi;
@@ -26,8 +31,8 @@ let apiHandler = {
         return verificationCodeApi;
     }
     ,
-    getRegisteredUserApi: function () {
-        return registeredUserApi;
+    getUserApi: function () {
+        return randlUser1Api;
     }
     ,
     getPersonalInfoApi: function () {

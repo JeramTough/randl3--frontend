@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import de from "element-ui/src/locale/lang/de";
 
 function HttpClient(baseUrl) {
     return {
@@ -11,12 +12,12 @@ function HttpClient(baseUrl) {
             this.handle.isPrintedLog = false;
         },
 
-        get: function (url, params, caller) {
+        get: function (path, params, caller) {
             let handle = this.handle;
             Vue.axios({
                 baseURL: baseUrl,
                 method: 'get',
-                url: url,
+                url: path,
                 withCredentials: true,
                 params: params,
                 headers: {'Authorization': handle.getAuthHeader()}
@@ -27,12 +28,12 @@ function HttpClient(baseUrl) {
             });
         },
 
-        post: function (url, data, caller) {
+        post: function (path, data, caller) {
             let handle = this.handle;
             Vue.axios({
                 baseURL: baseUrl,
                 method: 'post',
-                url: url,
+                url: path,
                 withCredentials: true,
                 data: data,
                 headers: {'Authorization': handle.getAuthHeader()}
@@ -43,12 +44,12 @@ function HttpClient(baseUrl) {
             });
         },
 
-        postWithParams: function (url, params, caller) {
+        postWithParams: function (path, params, caller) {
             let handle = this.handle;
             Vue.axios({
                 baseURL: baseUrl,
                 method: 'post',
-                url: url,
+                url: path,
                 withCredentials: true,
                 params: params,
                 headers: {'Authorization': handle.getAuthHeader()}
@@ -105,7 +106,7 @@ function HttpClient(baseUrl) {
     };
 }
 
-const randl2HttpClient = new HttpClient("http://localhost:8088/randl2");
+const randl2HttpClient = new HttpClient("http://127.0.0.1:8088/randl2/adminApp");
 
 
 export {randl2HttpClient};

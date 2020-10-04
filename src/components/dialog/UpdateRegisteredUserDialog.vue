@@ -118,7 +118,7 @@
                         }
                     };
 
-                    apiHandler.getRegisteredUserApi().update(this.formData, caller);
+                    apiHandler.getUserApi().update(this.formData, caller);
                 }
             }
             ,

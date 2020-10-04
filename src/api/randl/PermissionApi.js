@@ -1,4 +1,4 @@
-import {randl2HttpClient} from './base/HttpClient'
+import {randl2HttpClient} from '../base/HttpClient'
 
 const BASE = "/permission";
 

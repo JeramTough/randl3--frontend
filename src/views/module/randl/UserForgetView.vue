@@ -147,7 +147,7 @@
 
                         if (isFormatRight) {
                             this.isDoing = true;
-                            apiHandler.getRegisteredUserApi().verifyPhoneOrEmailByForget(
+                            apiHandler.getUserApi().verifyPhoneOrEmailByForget(
                                 {
                                     way: this.form.way,
                                     phoneOrEmail: this.form.phoneOrEmail
@@ -196,7 +196,7 @@
                             this.$messageUtil.error("两次密码不一致！");
                             return;
                         }
-                        apiHandler.getRegisteredUserApi().verifyPasswordByForget({
+                        apiHandler.getUserApi().verifyPasswordByForget({
                             password: this.form.password,
                             repeatedPassword: this.form.repeatedPassword,
                             way: this.form.way,
@@ -204,7 +204,7 @@
                         }, (data) => {
                             if (data.isSuccessful) {
                                 Vue.$messageUtil.success1(data.responseBody);
-                                apiHandler.getRegisteredUserApi().reset({
+                                apiHandler.getUserApi().reset({
                                     way: this.form.way,
                                     transactionId: this.form.transactionId
                                 }, (data) => {

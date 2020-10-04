@@ -159,7 +159,7 @@
             obtainTableData() {
                 this.isLoading = true;
                 let Vue = this;
-                apiHandler.getRegisteredUserApi().getByPage({
+                apiHandler.getUserApi().getByPage({
                     index: this.currentPageIndex,
                     size: this.currentPageSize
                 }, function (data) {
@@ -187,7 +187,7 @@
             queryByKeyword() {
                 let Vue = this;
                 if (this.searchParameter.keyword.length > 0) {
-                    apiHandler.getRegisteredUserApi().byKeyword({keyword: this.searchParameter.keyword}, (data) => {
+                    apiHandler.getUserApi().byKeyword({keyword: this.searchParameter.keyword}, (data) => {
                         if (data.isSuccessful) {
                             Vue._data.tableData = data.responseBody;
                         }
@@ -208,7 +208,7 @@
                 this.$messageUtil.sureDialog("是否要删除该名注册用户" +
                     "【" + rows[index].account + "】", () => {
                     this.isLoading = true;
-                    apiHandler.getRegisteredUserApi().remove({uid: uid}, (data) => {
+                    apiHandler.getUserApi().remove({uid: uid}, (data) => {
                         if (data.isSuccessful) {
                             Vue.$messageUtil.success(data.responseBody);
                             rows.splice(index, 1);

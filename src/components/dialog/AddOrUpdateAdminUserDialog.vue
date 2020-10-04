@@ -126,9 +126,9 @@
                     };
 
                     if (this.dataSource != null) {
-                        apiHandler.getAdminUserApi().update(this.formData, caller);
+                        apiHandler.getRandlUserApi().update(this.formData, caller);
                     } else {
-                        apiHandler.getAdminUserApi().add(this.formData, caller);
+                        apiHandler.getRandlUserApi().add(this.formData, caller);
                     }
 
 

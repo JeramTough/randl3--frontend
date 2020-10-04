@@ -138,7 +138,7 @@
                 let Vue = this;
 
                 let updateAdminInfo = function () {
-                    apiHandler.getAdminUserApi().updateCurrent({
+                    apiHandler.getRandlUserApi().updateCurrent({
                         phoneNumber: Vue._data.formData.phoneNumber,
                         emailAddress: Vue._data.formData.emailAddress,
                         password: Vue._data.formData.password

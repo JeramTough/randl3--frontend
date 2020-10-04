@@ -10,9 +10,9 @@
                 <div style="color: #000000;text-align: right;">
                     <div style="color: #0d8f13;font-size: small">
                         <i class="el-icon-postcard"></i>
-                        {{systemUser.role.description}}
+                        {{systemUser.roleName}}
                     </div>
-                    <div style="font-size: large">{{systemUser.username}}</div>
+                    <div style="font-size: large">{{systemUser.account}}</div>
                 </div>
             </el-col>
             <el-col :span="8">

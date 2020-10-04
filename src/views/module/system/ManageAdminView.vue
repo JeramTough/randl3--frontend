@@ -6,12 +6,11 @@
             <el-col :span="18">
                 <div>
                     <el-form :inline="true" :model="searchParameter" class="demo-form-inline">
-                        <el-form-item label="按关键字模糊搜索">
-                            <el-input v-model="searchParameter.keyword" placeholder="账号名,手机号,邮箱"></el-input>
+                        <el-form-item label="按搜索">
+                            <el-input v-model="searchParameter.keyword" placeholder="帐号名,手机号,邮箱"></el-input>
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="primary" icon="el-icon-search" @click="queryByKeyword">查询
-                            </el-button>
+                            <el-button type="primary" icon="el-icon-search" @click="queryByKeyword">查询</el-button>
                         </el-form-item>
                     </el-form>
                 </div>
@@ -19,6 +18,7 @@
             <el-col :span="6">
                 <el-button type="primary" icon="el-icon-refresh" size="small" round @click="obtainTableData">刷新
                 </el-button>
+                <el-button type="primary" icon="el-icon-plus" size="small" round @click="addRow">新增</el-button>
             </el-col>
         </el-row>
 
@@ -29,14 +29,9 @@
                 max-height="350">
             <el-table-column
                     fixed
-                    prop="uid"
-                    label="ID"
-                    width="50">
-            </el-table-column>
-            <el-table-column
-                    prop="account"
+                    prop="username"
                     label="帐号名"
-                    width="120">
+                    width="150">
             </el-table-column>
             <el-table-column
                     prop="phoneNumber"
@@ -54,13 +49,13 @@
                     width="200">
             </el-table-column>
             <el-table-column
-                    prop="enabled"
-                    label="是否可用"
+                    prop="role.description"
+                    label="角色名"
                     width="120">
             </el-table-column>
             <el-table-column
-                    prop="role.description"
-                    label="角色名"
+                    prop="enabled"
+                    label="是否可用"
                     width="120">
             </el-table-column>
             <el-table-column
@@ -100,7 +95,7 @@
         <el-divider/>
 
         <!--对话框控件-->
-        <my-au-dialog :data-source="selectedEntity" :visible.sync="dialogVisible" :title="dialogTitle"
+        <my-au-dialog :data-source="selectedAdminUser" :visible.sync="dialogVisible" :title="dialogTitle"
                       v-on:done="onDialogDone"/>
     </div>
 
@@ -108,13 +103,12 @@
 
 <script>
     import apiHandler from "@/api/base/ApiHandler";
-    import AUdialog from "@/components/dialog/UpdateRegisteredUserDialog.vue";
-    import UPdialog from "@/components/dialog/UpdatePersonalInfoDialog.vue";
+    import AUdialog from "@/components/dialog/AddOrUpdateAdminUserDialog.vue";
 
     export default {
-        name: "ManageRegisteredUserView",
+        name: "ManageAdminUserView",
         components: {
-            "my-au-dialog": AUdialog,
+            "my-au-dialog": AUdialog
         },
         mounted: function () {
             this.obtainTableData();
@@ -128,7 +122,6 @@
                 isLoading: false,
 
                 dialogVisible: false,
-                dialogVisible2: false,
 
                 dialogTitle: "",
                 /**
@@ -147,7 +140,7 @@
                 searchParameter: {
                     keyword: ''
                 },
-                selectedEntity: null,
+                selectedAdminUser: null
             }
         }
         ,
@@ -157,9 +150,6 @@
              */
             currentTotal: function () {
                 return this.tableData.length;
-            },
-            systemUser: function () {
-                return this.$store.state.systemUser;
             }
         }
         ,
@@ -167,7 +157,7 @@
             obtainTableData() {
                 this.isLoading = true;
                 let Vue = this;
-                apiHandler.getRegisteredUserApi().getByPage({
+                apiHandler.getRandlUserApi().getByPage({
                     index: this.currentPageIndex,
                     size: this.currentPageSize
                 }, function (data) {
@@ -181,7 +171,10 @@
 
                     }
                     else {
-                        Vue.$messageUtil.error(data.responseBody);
+                        Vue.$message({
+                            message: data.responseBody,
+                            type: 'error'
+                        });
                     }
                 });
             },
@@ -195,9 +188,9 @@
             queryByKeyword() {
                 let Vue = this;
                 if (this.searchParameter.keyword.length > 0) {
-                    apiHandler.getRegisteredUserApi().byKeyword({keyword: this.searchParameter.keyword}, (data) => {
+                    apiHandler.getRandlUserApi().byKeyword({keyword: this.searchParameter.keyword}, (data) => {
                         if (data.isSuccessful) {
-                            Vue._data.tableData = data.responseBody;
+                            Vue._data.tableData = [data.responseBody];
                         }
                         else {
                             Vue.$messageUtil.error(data.responseBody);
@@ -212,11 +205,11 @@
             },
             deleteRow(index, rows) {
                 let uid = rows[index].uid;
+                this.isLoading = true;
                 let Vue = this;
-                this.$messageUtil.sureDialog("是否要删除该名注册用户" +
-                    "【" + rows[index].account + "】", () => {
-                    this.isLoading = true;
-                    apiHandler.getRegisteredUserApi().remove({uid: uid}, (data) => {
+                this.$messageUtil.sureDialog("是否要删除该管理员账号【" +
+                    rows[index].username + "】", () => {
+                    apiHandler.getRandlUserApi().remove({uid: uid}, (data) => {
                         if (data.isSuccessful) {
                             Vue.$messageUtil.success(data.responseBody);
                             rows.splice(index, 1);
@@ -231,28 +224,29 @@
             ,
             updateRow(index, rows) {
                 this.dialogTitle = "修改账号信息";
-                this.selectedEntity = rows[index];
                 this.dialogVisible = true;
-            }
-            ,
-            updateRowForPersonalInfo(index, rows) {
-                this.selectedEntity = rows[index];
-                this.dialogVisible2 = true;
+                this.selectedAdminUser = rows[index];
             }
             ,
             addRow() {
                 this.dialogTitle = "添加新账号";
                 this.dialogVisible = true;
-                this.selectedEntity = null;
+                this.selectedAdminUser = null;
             }
             ,
-            onDialogDone(editedRegisteredUser) {
-                //更新的情况下
-                // this.selectedEntity = editedRegisteredUser;
-                this.selectedEntity.enabled = editedRegisteredUser.accountStatus === 1 ? '是' : '否';
-                Object.keys(editedRegisteredUser).forEach(key => {
-                    this.selectedEntity[key] = editedRegisteredUser[key];
-                });
+            onDialogDone(editedSystemUser) {
+
+                if (editedSystemUser.uid == null) {
+                    //新增的情况下
+                    this.obtainTableData();
+                }
+                else {
+                    //更新的情况下
+                    this.selectedAdminUser.enabled = editedSystemUser.accountStatus === 1 ? '是' : '否';
+                    Object.keys(editedSystemUser).forEach(key => {
+                        this.selectedAdminUser[key] = editedSystemUser[key];
+                    });
+                }
             }
         },
     }

@@ -69,13 +69,13 @@
 
                 if (!this.isLogining) {
 
-                    apiHandler.getAdminUserApi().login(this.userCredentials, function (data) {
+                    apiHandler.getAdminLoginApi().login(this.userCredentials, function (data) {
                         if (data.isSuccessful) {
                             let systemUser = data.responseBody;
                             //保存用户登录成功数据
                             Vue.$store.commit('loginSuccessfully', systemUser);
                             //跳转
-                            Vue.$messageUtil.success("【" + systemUser.username + "】登录成功！");
+                            Vue.$messageUtil.success("【" + systemUser.account + "】登录成功！");
                             Vue.$router.push({path: '/Layout'});
                         }
                         else {
