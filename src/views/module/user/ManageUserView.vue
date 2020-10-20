@@ -20,7 +20,7 @@
                             </el-date-picker>
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="primary" icon="el-icon-search" @click="queryByKeyword">查询
+                            <el-button type="primary" icon="el-icon-search" @click="queryByCondition">查询
                             </el-button>
                         </el-form-item>
                     </el-form>
@@ -137,6 +137,7 @@
 <script>
     import apiHandler from "@/api/base/ApiHandler";
     import AUdialog from "@/components/dialog/UpdateRegisteredUserDialog.vue";
+    import jsValidate from '@/util/JsValidate';
     import UPdialog from "@/components/dialog/UpdatePersonalInfoDialog.vue";
 
     export default {
@@ -173,8 +174,8 @@
                 tableData: []
                 ,
                 searchParameter: {
-                    keyword: '',
-                    registerDateRange:null
+                    keyword: null,
+                    registerDateRange: null
                 },
                 selectedEntity: null,
             }
@@ -234,23 +235,27 @@
                 this.currentPageIndex = val;
                 this.obtainTableData();
             },
-            queryByKeyword() {
+            queryByCondition() {
                 let Vue = this;
-                if (this.searchParameter.keyword.length > 0) {
-                    apiHandler.getUserApi().byKeyword({keyword: this.searchParameter.keyword}, (data) => {
+                this.searchParameter.index = this.currentPageIndex;
+                this.searchParameter.size = this.currentPageSize;
+                if (jsValidate.isEmpty(this.searchParameter.keyword)) {
+                    this.searchParameter.keyword = null;
+                }
+                if (jsValidate.isEmpty(this.searchParameter.registerDateRange)) {
+                    this.searchParameter.registerDateRange = null;
+                }
+
+                apiHandler.getUserApi().condition(this.searchParameter)
+                    .then(function (data) {
                         if (data.isSuccessful) {
-                            Vue._data.tableData = data.responseBody;
+                            Vue._data.tableData = data.responseBody.list;
                         }
                         else {
                             Vue.$messageUtil.error(data.responseBody);
                         }
-                        this.isLoading = false;
+                        Vue.isLoading = false;
                     });
-                }
-                else {
-                    this.obtainTableData();
-                }
-
             },
             deleteRow(index, rows) {
                 let uid = rows[index].uid;

@@ -1,5 +1,4 @@
 import adminLoginApi from "@/api/randl/AdminLoginApi";
-import randlUser1Api from "@/api/randl/RandlUser1Api";
 import randlUserApi from "@/api/randl/RandlUserApi";
 
 import roleApi from "@/api/randl/RoleApi";
@@ -32,7 +31,7 @@ let apiHandler = {
     }
     ,
     getUserApi: function () {
-        return randlUser1Api;
+        return randlUserApi;
     }
     ,
     getPersonalInfoApi: function () {

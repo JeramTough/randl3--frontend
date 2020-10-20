@@ -1,9 +1,34 @@
 import {randl2HttpClient} from '../base/HttpClient'
+import {randl2HttpClientV2} from '../base/HttpClientV2'
 
 const BASE = "/randlUser";
 
 export default {
 
+    verifyPhoneOrEmailForNew(data, caller) {
+        randl2HttpClient.post(BASE + "/verify/phoneOrEmailForNew", data, caller);
+    },
+    verifyPhoneOrEmailByForget(data, caller) {
+        randl2HttpClient.post(BASE + "/verify/phoneOrEmailByForget", data, caller);
+    },
+    verifyPassword(data, caller) {
+        randl2HttpClient.post(BASE + "/verify/password", data, caller);
+    },
+    verifyPasswordByForget(data, caller) {
+        randl2HttpClient.post(BASE + "/verify/passwordByForget", data, caller);
+    },
+    register(data, caller) {
+        randl2HttpClient.post(BASE + "/register", data, caller);
+    },
+    reset(data, caller) {
+        randl2HttpClient.post(BASE + "/reset", data, caller);
+    },
+    update(data, caller) {
+        randl2HttpClient.post(BASE + "/update", data, caller);
+    },
+    condition(params) {
+        return randl2HttpClientV2.get(BASE + "/condition", params);
+    },
     getByPage(params, caller) {
         randl2HttpClient.get(BASE + "/page", params, caller);
     },
@@ -13,16 +38,4 @@ export default {
     remove(params, caller) {
         randl2HttpClient.postWithParams(BASE + "/remove", params, caller);
     },
-    add(data, caller) {
-        randl2HttpClient.post(BASE + "/add", data, caller);
-    },
-    update(data, caller) {
-        randl2HttpClient.post(BASE + "/update", data, caller);
-    },
-    updateCurrent(data, caller) {
-        randl2HttpClient.post(BASE + "/updateCurrent", data, caller);
-    },
-    byKeyword(params, caller) {
-        randl2HttpClient.get(BASE + "/byKeyword", params, caller);
-    }
-};
+}
