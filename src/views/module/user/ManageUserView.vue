@@ -8,11 +8,12 @@
                     <el-form :inline="true" :model="searchParameter" class="demo-form-inline">
                         <el-form-item label="关键字">
                             <el-input style="min-width: 250px"
-                                      v-model="searchParameter.keyword" placeholder="模糊搜索(账号名,手机号,邮箱...)"></el-input>
+                                      v-model="searchParameter.keyword" placeholder="模糊搜索(账号名,手机号,邮箱...)"
+                                      clearable @change="queryByCondition"></el-input>
                         </el-form-item>
                         <el-form-item label="注册时间">
                             <el-date-picker
-                                    v-model="searchParameter.registerDateRange"
+                                    v-model="dateSelectorArray"
                                     type="daterange"
                                     range-separator="至"
                                     start-placeholder="开始日期"
@@ -138,6 +139,7 @@
     import apiHandler from "@/api/base/ApiHandler";
     import AUdialog from "@/components/dialog/UpdateRegisteredUserDialog.vue";
     import jsValidate from '@/util/JsValidate';
+    import dateTimeUtil from '@/util/DateTimeUtil.js';
     import UPdialog from "@/components/dialog/UpdatePersonalInfoDialog.vue";
 
     export default {
@@ -148,6 +150,10 @@
         mounted: function () {
             this.obtainTableData();
         },
+        /**
+         *
+         * @returns {{isLoading: boolean, currentPageSize: number, dialogVisible: boolean, registerDateArray: [], dialogVisible2: boolean, dialogTitle: string, tableData: [], searchParameter: {registerDateArray: [], registerDateRange: null, keyword: null}, currentPageIndex: number, selectedEntity: null}}
+         */
         data() {
             return {
 
@@ -168,6 +174,11 @@
                  *表格当前页能显示的大小
                  */
                 currentPageSize: 100,
+
+                /**
+                 *
+                 */
+                dateSelectorArray: [],
                 /**
                  *表格数据
                  */
@@ -175,7 +186,8 @@
                 ,
                 searchParameter: {
                     keyword: null,
-                    registerDateRange: null
+                    startDate: null,
+                    endDate: null
                 },
                 selectedEntity: null,
             }
@@ -201,32 +213,61 @@
                     index: this.currentPageIndex,
                     size: this.currentPageSize
                 }, function (data) {
-                    if (data.isSuccessful) {
-                        let pageData = data.responseBody;
-                        Vue._data.isLoading = false;
-                        //是视图化数据
-                        for (let item of pageData.list) {
-                            item.enabled = item.accountStatus != 0;
-                            if (item.channel == 0) {
-                                item.channelName = "0:管理员添加";
-                            }
-                            else if (item.channel == 1) {
-                                item.channelName = "1:用户注册";
-                            }
-                            else if (item.channel == 2) {
-                                item.channelName = "2:数据库添加";
-                            }
-                            else {
-                                item.channelName = "其他";
-                            }
-                        }
-                        Vue._data.tableData = pageData.list;
-
-                    }
-                    else {
-                        Vue.$messageUtil.error(data.responseBody);
-                    }
+                    Vue.processTableData(data);
                 });
+            },
+            queryByCondition() {
+                let Vue = this;
+
+                //参数为空设置
+                this.searchParameter.index = this.currentPageIndex;
+                this.searchParameter.size = this.currentPageSize;
+                if (jsValidate.isEmpty(this.searchParameter.keyword)) {
+                    this.searchParameter.keyword = null;
+                }
+                //参数格式化时间
+                if (this.dateSelectorArray.length > 0) {
+                    let startDate = this.dateSelectorArray[0];
+                    let endDate = this.dateSelectorArray[1];
+                    startDate = dateTimeUtil.formatDate("YYYY-mm-dd", startDate);
+                    endDate = dateTimeUtil.formatDate("YYYY-mm-dd", endDate);
+                    this.searchParameter.startDate = startDate
+                    this.searchParameter.endDate = endDate;
+                }
+
+                apiHandler.getUserApi().condition(this.searchParameter)
+                    .then(function (data) {
+                        Vue.processTableData(data);
+                    });
+            },
+            processTableData(data) {
+                let Vue = this;
+                if (data.isSuccessful) {
+                    let pageData = data.responseBody;
+                    Vue._data.isLoading = false;
+                    //是视图化数据
+                    for (let item of pageData.list) {
+                        item.enabled = item.accountStatus != 0;
+                        if (item.channel == 0) {
+                            item.channelName = "0:管理员添加";
+                        }
+                        else if (item.channel == 1) {
+                            item.channelName = "1:用户注册";
+                        }
+                        else if (item.channel == 2) {
+                            item.channelName = "2:数据库添加";
+                        }
+                        else {
+                            item.channelName = "其他";
+                        }
+                    }
+                    Vue._data.tableData = pageData.list;
+
+                }
+                else {
+                    Vue.$messageUtil.error(data.responseBody);
+                }
+                Vue.isLoading = false;
             },
             handleSizeChange(val) {
                 this.currentPageSize = val;
@@ -234,28 +275,6 @@
             handleCurrentChange(val) {
                 this.currentPageIndex = val;
                 this.obtainTableData();
-            },
-            queryByCondition() {
-                let Vue = this;
-                this.searchParameter.index = this.currentPageIndex;
-                this.searchParameter.size = this.currentPageSize;
-                if (jsValidate.isEmpty(this.searchParameter.keyword)) {
-                    this.searchParameter.keyword = null;
-                }
-                if (jsValidate.isEmpty(this.searchParameter.registerDateRange)) {
-                    this.searchParameter.registerDateRange = null;
-                }
-
-                apiHandler.getUserApi().condition(this.searchParameter)
-                    .then(function (data) {
-                        if (data.isSuccessful) {
-                            Vue._data.tableData = data.responseBody.list;
-                        }
-                        else {
-                            Vue.$messageUtil.error(data.responseBody);
-                        }
-                        Vue.isLoading = false;
-                    });
             },
             deleteRow(index, rows) {
                 let uid = rows[index].uid;
