@@ -23,6 +23,9 @@ export default {
     reset(data, caller) {
         randl2HttpClient.post(BASE + "/reset", data, caller);
     },
+    add(data, caller) {
+        randl2HttpClient.post(BASE + "/add", data, caller);
+    },
     update(data, caller) {
         randl2HttpClient.post(BASE + "/update", data, caller);
     },

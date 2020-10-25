@@ -3,7 +3,7 @@
     <div>
 
         <el-row>
-            <el-col :span="21">
+            <el-col :span="18">
                 <div>
                     <el-form :inline="true" :model="searchParameter" class="demo-form-inline">
                         <el-form-item label="关键字">
@@ -27,9 +27,10 @@
                     </el-form>
                 </div>
             </el-col>
-            <el-col :span="3">
+            <el-col :span="6">
                 <el-button type="primary" icon="el-icon-refresh" size="small" round @click="obtainTableData">刷新
                 </el-button>
+                <el-button type="primary" icon="el-icon-plus" size="small" round @click="addRow">新增</el-button>
             </el-col>
         </el-row>
 
@@ -138,7 +139,7 @@
 
 <script>
     import apiHandler from "@/api/base/ApiHandler";
-    import AUdialog from "@/components/dialog/UpdateRandlUserDialog.vue";
+    import AUdialog from "@/components/dialog/AddOrUpdateRandlUserDialog.vue";
     import jsValidate from '@/util/JsValidate';
     import dateTimeUtil from '@/util/DateTimeUtil.js';
 
@@ -286,12 +287,28 @@
             handleSwitchChanged(index, tableData) {
                 let Vue = this;
                 this.isLoading = true;
-                apiHandler.getRandlUserApi().update1(tableData[index]).then((data) => {
+
+                var entity = tableData[index];
+                if (entity.enabled) {
+                    entity.accountStatus = 1;
+                }
+                else {
+                    entity.accountStatus = 0;
+                }
+
+                apiHandler.getRandlUserApi().update1(entity).then((data) => {
                     if (data.isSuccessful) {
                         Vue.$messageUtil.success(data.responseBody);
                     }
                     else {
+                        //恢复原来的开关状态
                         Vue._data.tableData[index].enabled = !(Vue._data.tableData[index].enabled);
+                        if (Vue._data.tableData[index].enabled) {
+                            Vue._data.tableData[index].accountStatus = 1;
+                        }
+                        else {
+                            Vue._data.tableData[index].accountStatus = 0;
+                        }
                         Vue.$messageUtil.error(data.responseBody);
                     }
                     this.isLoading = false;
@@ -333,13 +350,20 @@
                 this.selectedEntity = null;
             }
             ,
-            onDialogDone(editedRegisteredUser) {
+            onDialogDone(editedRandlUser) {
                 //更新的情况下
-                // this.selectedEntity = editedRegisteredUser;
-                this.selectedEntity.enabled = editedRegisteredUser.accountStatus === 1 ? '是' : '否';
-                Object.keys(editedRegisteredUser).forEach(key => {
-                    this.selectedEntity[key] = editedRegisteredUser[key];
-                });
+                if (editedRandlUser.uid) {
+                    // this.selectedEntity = editedRegisteredUser;
+                    this.selectedEntity.enabled = editedRandlUser.accountStatus === 1 ? true : false;
+                    Object.keys(editedRandlUser).forEach(key => {
+                        this.selectedEntity[key] = editedRandlUser[key];
+                    });
+                }
+                //添加的情况下
+                else {
+                    this.obtainTableData();
+                }
+
             }
         },
     }

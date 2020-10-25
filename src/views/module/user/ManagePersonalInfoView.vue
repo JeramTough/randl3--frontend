@@ -184,7 +184,6 @@
 
 <script>
     import apiHandler from "@/api/base/ApiHandler";
-    import AUdialog from "@/components/dialog/UpdateRandlUserDialog.vue";
     import UPdialog from "@/components/dialog/UpdatePersonalInfoDialog.vue";
 
     export default {

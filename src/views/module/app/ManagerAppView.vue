@@ -3,7 +3,7 @@
     <div>
 
         <el-row>
-            <el-col :span="21">
+            <el-col :span="18">
                 <div>
                     <el-form :inline="true" :model="searchParameter" class="demo-form-inline">
                         <el-form-item label="关键字">
@@ -27,9 +27,10 @@
                     </el-form>
                 </div>
             </el-col>
-            <el-col :span="3">
+            <el-col :span="6">
                 <el-button type="primary" icon="el-icon-refresh" size="small" round @click="obtainTableData">刷新
                 </el-button>
+                <el-button type="primary" icon="el-icon-plus" size="small" round @click="addRow">新增</el-button>
             </el-col>
         </el-row>
 
@@ -121,7 +122,7 @@
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                     :current-page="currentPageIndex"
-                    :page-sizes="[100, 200, 300, 400]"
+                    :page-sizes="[10, 20, 50, 100]"
                     :page-size="currentPageSize"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="currentTotal">
@@ -139,7 +140,7 @@
 
 <script>
     import apiHandler from "@/api/base/ApiHandler";
-    import AUdialog from "@/components/dialog/UpdateRandlUserDialog.vue";
+    import AUdialog from "@/components/dialog/AddOrUpdateRandlUserDialog.vue";
     import jsValidate from '@/util/JsValidate';
     import dateTimeUtil from '@/util/DateTimeUtil.js';
 
@@ -174,7 +175,7 @@
                 /**
                  *表格当前页能显示的大小
                  */
-                currentPageSize: 100,
+                currentPageSize: 10,
 
                 /**
                  *
@@ -286,12 +287,12 @@
                 });
             },
             deleteRow(index, rows) {
-                let uid = rows[index].uid;
+                let fid = rows[index].fid;
                 let Vue = this;
-                this.$messageUtil.sureDialog("是否要删除该名注册用户" +
-                    "【" + rows[index].account + "】", () => {
+                this.$messageUtil.sureDialog("是否要删除该应用" +
+                    "【" + rows[index].appName + "】", () => {
                     this.isLoading = true;
-                    apiHandler.getUserApi().remove({uid: uid}, (data) => {
+                    apiHandler.getRandlAppApi().remove({fid: fid}).then((data) => {
                         if (data.isSuccessful) {
                             Vue.$messageUtil.success(data.responseBody);
                             rows.splice(index, 1);

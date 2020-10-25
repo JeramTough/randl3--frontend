@@ -15,6 +15,12 @@
                               :placeholder="passwordHint" @input="onFormChanged"
                               v-bind:show-password="dataSource==null"></el-input>
                 </el-form-item>
+                <el-form-item v-show="dataSource==null" label="重复密码" :label-width="formLabelWidth">
+                    <el-input v-model.lazy="formData.repeatedPassword" autocomplete="off"
+                              placeholder="重复密码" @input="onFormChanged"
+                              v-bind:show-password="dataSource==null">>
+                    </el-input>
+                </el-form-item>
                 <el-form-item label="手机号码" :label-width="formLabelWidth">
                     <el-input v-model="formData.phoneNumber" autocomplete="off"
                               @input="onFormChanged"></el-input>
@@ -23,7 +29,6 @@
                     <el-input v-model="formData.emailAddress" autocomplete="off"
                               @input="onFormChanged"></el-input>
                 </el-form-item>
-
                 <el-form-item v-show="dataSource!=null" label="是否可用" :label-width="formLabelWidth">
                     <el-switch v-model="isEnabled" @change="onFormChanged"></el-switch>
                 </el-form-item>
@@ -43,7 +48,7 @@
     import apiHandler from "@/api/base/ApiHandler";
 
     export default {
-        name: "UpdateRandlUserDialog",
+        name: "AddOrUpdateRandlUserDialog",
         props: ['dataSource', 'visible', 'title'],
         components: {},
 
@@ -52,12 +57,14 @@
 
         data: function () {
             return {
-                passwordHint: "需要更新密码才填",
+                passwordHint: null,
                 formLabelWidth: '120px',
+                roles: null,
                 formData: {
                     uid: null,
                     account: null,
                     password: null,
+                    repeatedPassword: null,
                     phoneNumber: null,
                     emailAddress: null,
                     accountStatus: null
@@ -74,8 +81,7 @@
                 set: function (newValue) {
                     if (newValue) {
                         this.formData.accountStatus = 1;
-                    }
-                    else {
+                    } else {
                         this.formData.accountStatus = 0;
                     }
                 }
@@ -91,48 +97,64 @@
                 let Vue = this;
                 if (now || !this.isFormChanged) {
                     this.$emit('update:visible', false);
-                }
-                else {
+                } else {
                     this.isProcessingOption = true;
 
                     let caller = (data) => {
                         if (data.isSuccessful) {
                             Vue._data.isProcessingOption = false;
                             Vue.$emit('update:visible', false);
-                            Vue.$messageUtil.success(data.responseBody);
+                            Vue.$messageUtil.success1(data.responseBody);
                             Vue.handleDoneEvent();
-                        }
-                        else {
+                        } else {
                             Vue._data.isProcessingOption = false;
                             Vue.$messageUtil.error("操作失败！" + data.responseBody);
                         }
                     };
 
-                    apiHandler.getUserApi().update(this.formData, caller);
+                    if (this.dataSource != null) {
+                        apiHandler.getRandlUserApi().update(this.formData, caller);
+                    } else {
+                        apiHandler.getRandlUserApi().add(this.formData, caller);
+                    }
+
+
                 }
             }
             ,
             onOpened: function () {
-                let Vue=this;
                 this.isFormChanged = false;
-                this.loadingFormData();
+
+                let Vue = this;
+                this.refreshFormData();
             },
-            loadingFormData() {
-                this.formData.uid = this.dataSource.uid;
-                this.formData.account = this.dataSource.account;
-                this.formData.phoneNumber = this.dataSource.phoneNumber;
-                this.formData.emailAddress = this.dataSource.emailAddress;
-                this.formData.accountStatus = this.dataSource.accountStatus;
-                this.formData.password = null;
+            refreshFormData() {
+                if (this.dataSource != null) {
+                    //if it's the update option’
+                    this.passwordHint = "需要更新密码才填";
+
+                    this.formData.uid = this.dataSource.uid;
+                    this.formData.account = this.dataSource.account;
+                    this.formData.password = null;
+                    this.formData.phoneNumber = this.dataSource.phoneNumber;
+                    this.formData.emailAddress = this.dataSource.emailAddress;
+                    this.formData.accountStatus = this.dataSource.accountStatus;
+                } else {
+                    //if it's the update option’
+                    this.passwordHint = "密码为必填字段";
+
+                    Object.keys(this.formData).forEach(key => {
+                        this.formData[key] = null;
+                    });
+                }
+
             },
             handleDoneEvent() {
-                let registeredUser = {};
-
+                let randlUser = {};
                 Object.keys(this.formData).forEach(key => {
-                    registeredUser[key] = this.formData[key];
+                    randlUser[key] = this.formData[key];
                 });
-
-                this.$emit('done', registeredUser);
+                this.$emit('done', randlUser);
             }
             ,
             onFormChanged() {
