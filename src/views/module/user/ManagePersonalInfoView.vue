@@ -7,10 +7,12 @@
                 <div>
                     <el-form :inline="true" :model="searchParameter" class="demo-form-inline">
                         <el-form-item label="按关键字模糊搜索">
-                            <el-input v-model="searchParameter.keyword" placeholder="账号名,手机号,邮箱"></el-input>
+                            <el-input v-model="searchParameter.keyword" placeholder="关键字"></el-input>
                         </el-form-item>
                         <el-form-item>
                             <el-button type="primary" icon="el-icon-search" @click="queryByKeyword">查询
+                            </el-button>
+                            <el-button type="primary" icon="el-icon-s-grid" @click="queryByKeyword">高级搜索
                             </el-button>
                         </el-form-item>
                     </el-form>
@@ -28,41 +30,122 @@
                 style="width: 100%"
                 max-height="350">
             <el-table-column
-                    fixed
+                    type="expand"
+                    label=">(点击)"
+                    width="100">
+                <template slot-scope="props">
+                    <div>
+                        <el-form label-position="left" class="table-expand">
+                            <el-form-item label="帐号名">
+                                <span>{{ props.row.account }}</span>
+                            </el-form-item>
+                            <el-form-item label="真实名字">
+                                <span>{{ props.row.realname }}</span>
+                            </el-form-item>
+                            <el-form-item label="昵称">
+                                <span>{{ props.row.nickname }}</span>
+                            </el-form-item>
+                            <el-form-item label="年龄">
+                                <span>{{ props.row.age }}</span>
+                            </el-form-item>
+                            <el-form-item label="性别">
+                                <span>{{ props.row.gender }}</span>
+                            </el-form-item>
+                            <el-form-item label="生日">
+                                <span>{{ props.row.birthday }}</span>
+                            </el-form-item>
+                            <el-form-item label="手机号码">
+                                <span>{{ props.row.phoneNumber }}</span>
+                            </el-form-item>
+                            <el-form-item label="手机号码">
+                                <span>{{ props.row.phoneNumber }}</span>
+                            </el-form-item>
+                            <el-form-item label="身份证号码">
+                                <span>{{ props.row.identityNumber }}</span>
+                            </el-form-item>
+                            <el-form-item label="联系方式">
+                                <span>{{ props.row.contactWays }}</span>
+                            </el-form-item>
+                            <el-form-item label="毕业学校">
+                                <span>{{ props.row.school }}</span>
+                            </el-form-item>
+                            <el-form-item label="职业">
+                                <span>{{ props.row.job }}</span>
+                            </el-form-item>
+                            <el-form-item label="家庭地址">
+                                <span>{{ props.row.homeAddress }}</span>
+                            </el-form-item>
+                            <el-form-item label="个性签名">
+                                <span>{{ props.row.personalizedSignature }}</span>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                </template>
+            </el-table-column>
+
+            <el-table-column
                     prop="uid"
                     label="ID"
                     width="50">
             </el-table-column>
+
             <el-table-column
                     prop="account"
                     label="帐号名"
                     width="120">
             </el-table-column>
+
+            <el-table-column
+                    prop="realname"
+                    label="真实名字"
+                    width="120">
+                <template slot-scope="scope">
+                    <el-tag v-show="scope.row.realname!=null&&scope.row.realname.length>0">
+                        <div style="font-weight: bolder">{{ scope.row.realname }}</div>
+                    </el-tag>
+                </template>
+            </el-table-column>
+
+            <el-table-column
+                    prop="nickname"
+                    label="昵称"
+                    width="120">
+                <template slot-scope="scope">
+                    <el-tag v-show="scope.row.nickname!=null&&scope.row.nickname.length>0" type="info">
+                        <div style="font-weight: bolder">{{ scope.row.nickname }}</div>
+                    </el-tag>
+                </template>
+            </el-table-column>
+
+            <el-table-column
+                    prop="gender"
+                    label="性别"
+                    width="120">
+                <template slot-scope="scope">
+                    <el-tag type="success" effect="dark"
+                            v-show="scope.row.gender==='男'">
+                        <div style="font-weight: bolder"><i class="el-icon-male"></i></div>
+                    </el-tag>
+                    <el-tag type="danger" effect="dark"
+                            v-show="scope.row.gender==='女'">
+                        <div style="font-weight: bolder"><i class="el-icon-female"></i></div>
+                    </el-tag>
+                </template>
+            </el-table-column>
+
+            <el-table-column
+                    prop="age"
+                    label="年龄"
+                    width="120">
+            </el-table-column>
+
             <el-table-column
                     prop="phoneNumber"
                     label="手机号"
                     width="120">
             </el-table-column>
-            <el-table-column
-                    prop="emailAddress"
-                    label="邮箱地址"
-                    width="150">
-            </el-table-column>
-            <el-table-column
-                    prop="registrationTime"
-                    label="注册时间"
-                    width="200">
-            </el-table-column>
-            <el-table-column
-                    prop="enabled"
-                    label="是否可用"
-                    width="120">
-            </el-table-column>
-            <el-table-column
-                    prop="role.description"
-                    label="角色名"
-                    width="120">
-            </el-table-column>
+
+
             <el-table-column
                     fixed="right"
                     label="操作"
@@ -83,7 +166,7 @@
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                     :current-page="currentPageIndex"
-                    :page-sizes="[100, 200, 300, 400]"
+                    :page-sizes="[10, 20, 50, 100]"
                     :page-size="currentPageSize"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="currentTotal">
@@ -93,18 +176,19 @@
         <el-divider/>
 
         <!--对话框控件-->
-        <my-up-dialog :data-source="selectedEntity" :visible.sync="dialogVisible2" :title="'编辑用户个人信息'"/>
+        <my-up-dialog :data-source="selectedEntity" :visible.sync="dialogVisible2" :title="'编辑用户个人信息'"
+                      v-on:done="onDialogDone"/>
     </div>
 
 </template>
 
 <script>
     import apiHandler from "@/api/base/ApiHandler";
-    import AUdialog from "@/components/dialog/UpdateRegisteredUserDialog.vue";
+    import AUdialog from "@/components/dialog/UpdateRandlUserDialog.vue";
     import UPdialog from "@/components/dialog/UpdatePersonalInfoDialog.vue";
 
     export default {
-        name: "ManageRegisteredUserView",
+        name: "ManagePersonalInfoView",
         components: {
             "my-up-dialog": UPdialog
         },
@@ -159,10 +243,10 @@
             obtainTableData() {
                 this.isLoading = true;
                 let Vue = this;
-                apiHandler.getUserApi().getByPage({
+                apiHandler.getPersonalInfoApi().getByPage({
                     index: this.currentPageIndex,
                     size: this.currentPageSize
-                }, function (data) {
+                }).then(function (data) {
                     if (data.isSuccessful) {
                         let pageData = data.responseBody;
                         Vue._data.isLoading = false;
@@ -175,6 +259,7 @@
                     else {
                         Vue.$messageUtil.error(data.responseBody);
                     }
+                    Vue._data.isLoading = false;
                 });
             },
             handleSizeChange(val) {
@@ -231,6 +316,36 @@
                 this.selectedEntity = rows[index];
                 this.dialogVisible2 = true;
             }
+            ,
+            onDialogDone(editedPersonalInfo) {
+                //更新的情况下
+                // this.selectedEntity = editedRegisteredUser;
+                Object.keys(editedPersonalInfo).forEach(key => {
+                    this.selectedEntity[key] = editedPersonalInfo[key];
+                });
+            }
         },
     }
 </script>
+
+<style>
+    .table-expand {
+        font-size: 0;
+    }
+
+    .table-expand label {
+        width: 100px;
+        color: #009e21;
+        font-weight: bold;
+    }
+
+    .table-expand .el-form-item {
+        margin-right: 0;
+        margin-bottom: 0;
+        width: 100%;
+        text-align: left;
+        border-style: dotted;
+        border-color: #aec684;
+        color: black;
+    }
+</style>

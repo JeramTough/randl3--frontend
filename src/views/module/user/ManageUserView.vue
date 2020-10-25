@@ -88,7 +88,8 @@
                             <el-tag size="medium">{{ scope.row.name }}</el-tag>
                         </div>
                     </el-popover>-->
-                    <el-switch v-model="tableData[scope.$index].enabled"/>
+                    <el-switch v-model="tableData[scope.$index].enabled"
+                               @change="handleSwitchChanged(scope.$index,tableData)"/>
                 </template>
             </el-table-column>
 
@@ -137,10 +138,9 @@
 
 <script>
     import apiHandler from "@/api/base/ApiHandler";
-    import AUdialog from "@/components/dialog/UpdateRegisteredUserDialog.vue";
+    import AUdialog from "@/components/dialog/UpdateRandlUserDialog.vue";
     import jsValidate from '@/util/JsValidate';
     import dateTimeUtil from '@/util/DateTimeUtil.js';
-    import UPdialog from "@/components/dialog/UpdatePersonalInfoDialog.vue";
 
     export default {
         name: "ManageRegisteredUserView",
@@ -226,13 +226,17 @@
                     this.searchParameter.keyword = null;
                 }
                 //参数格式化时间
-                if (this.dateSelectorArray.length > 0) {
+                if (this.dateSelectorArray != null && this.dateSelectorArray.length > 0) {
                     let startDate = this.dateSelectorArray[0];
                     let endDate = this.dateSelectorArray[1];
                     startDate = dateTimeUtil.formatDate("YYYY-mm-dd", startDate);
                     endDate = dateTimeUtil.formatDate("YYYY-mm-dd", endDate);
                     this.searchParameter.startDate = startDate
                     this.searchParameter.endDate = endDate;
+                }
+                else if (this.dateSelectorArray == null) {
+                    this.searchParameter.startDate = null
+                    this.searchParameter.endDate = null;
                 }
 
                 apiHandler.getUserApi().condition(this.searchParameter)
@@ -247,7 +251,10 @@
                     Vue._data.isLoading = false;
                     //是视图化数据
                     for (let item of pageData.list) {
+                        //是否是可用的
                         item.enabled = item.accountStatus != 0;
+
+                        //账号渠道
                         if (item.channel == 0) {
                             item.channelName = "0:管理员添加";
                         }
@@ -275,6 +282,20 @@
             handleCurrentChange(val) {
                 this.currentPageIndex = val;
                 this.obtainTableData();
+            },
+            handleSwitchChanged(index, tableData) {
+                let Vue = this;
+                this.isLoading = true;
+                apiHandler.getRandlUserApi().update1(tableData[index]).then((data) => {
+                    if (data.isSuccessful) {
+                        Vue.$messageUtil.success(data.responseBody);
+                    }
+                    else {
+                        Vue._data.tableData[index].enabled = !(Vue._data.tableData[index].enabled);
+                        Vue.$messageUtil.error(data.responseBody);
+                    }
+                    this.isLoading = false;
+                });
             },
             deleteRow(index, rows) {
                 let uid = rows[index].uid;

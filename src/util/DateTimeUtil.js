@@ -6,6 +6,11 @@ export default {
      * @returns {*}
      */
     formatDate: function (fmt, date) {
+
+        if (!(date instanceof Date)) {
+            date = this.createDate(date);
+        }
+
         let ret;
         const opt = {
             "Y+": date.getFullYear().toString(),        // 年
@@ -23,6 +28,16 @@ export default {
             }
         }
         return fmt;
+    }
+
+    ,
+
+
+    createDate: function (date) {
+        var ps = date.split(" ");
+        var pd = ps[0].split("-");
+        var pt = ps.length > 1 ? ps[1].split(":") : [0, 0, 0];
+        return new Date(pd[0], pd[1] - 1, pd[2], pt[0], pt[1], pt[2]);
     }
 }
 

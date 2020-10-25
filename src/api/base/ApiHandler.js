@@ -1,6 +1,6 @@
 import adminLoginApi from "@/api/randl/AdminLoginApi";
 import randlUserApi from "@/api/randl/RandlUserApi";
-
+import randlAppApi from "@/api/randl/RandlAppApi";
 import roleApi from "@/api/randl/RoleApi";
 import apiInfoApi from "@/api/randl/ApiInfoApi";
 import permissionApi from "@/api/randl/PermissionApi";
@@ -43,6 +43,10 @@ let apiHandler = {
     }
     , getRegisteredUserLoginedApi: function () {
         return registeredUserLoginedApi;
+    }
+    ,
+    getRandlAppApi() {
+        return randlAppApi;
     }
 };
 

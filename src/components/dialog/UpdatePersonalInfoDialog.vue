@@ -127,6 +127,7 @@
 <script>
 
     import apiHandler from "@/api/base/ApiHandler";
+    import dateTimeUtil from '@/util/DateTimeUtil.js';
 
     export default {
         name: "UpdatePersonalInfoDialog",
@@ -249,10 +250,15 @@
                 let Vue = this;
 
                 if (this.isFormChanged) {
+                    //修复时间格式不正确问题
+                    if (this.formData.birthday) {
+                        this.formData.birthday = dateTimeUtil.formatDate("YYYY-mm-dd", this.formData.birthday);
+                    }
                     apiHandler.getPersonalInfoApi().update(this.formData, (data) => {
                         if (data.isSuccessful) {
                             Vue.$messageUtil.success1(data.responseBody);
                             Vue.$emit('update:visible', false);
+                            Vue.$emit('done', Vue._data.formData);
                         }
                         else {
                             Vue.$messageUtil.error(data.responseBody);

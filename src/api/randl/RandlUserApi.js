@@ -26,6 +26,9 @@ export default {
     update(data, caller) {
         randl2HttpClient.post(BASE + "/update", data, caller);
     },
+    update1(data) {
+        return randl2HttpClientV2.post(BASE + "/update", data);
+    },
     condition(params) {
         return randl2HttpClientV2.get(BASE + "/condition", params);
     },

@@ -1,6 +1,6 @@
 import {randl2HttpClient} from '../base/HttpClient'
-
-const BASE = "/personalInfo";
+import {randl2HttpClientV2} from '../base/HttpClientV2'
+const BASE = "/randlPersonalInfo";
 
 export default {
 
@@ -10,4 +10,7 @@ export default {
     update(data, caller) {
         randl2HttpClient.post(BASE + "/update", data, caller);
     },
+    getByPage(params){
+        return randl2HttpClientV2.get(BASE + "/page", params);
+    }
 };

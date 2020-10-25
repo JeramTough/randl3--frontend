@@ -34,7 +34,7 @@ function HttpClient(baseUrl) {
 
         post: function (path, data) {
             let handle = this.handle;
-            Vue.axios({
+            let promise = Vue.axios({
                 baseURL: baseUrl,
                 method: 'post',
                 url: path,
@@ -46,11 +46,12 @@ function HttpClient(baseUrl) {
             }).catch(function (error) {
                 return handle.handleError(error);
             });
+            return promise;
         },
 
         postWithParams: function (path, params) {
             let handle = this.handle;
-            Vue.axios({
+            let promise =Vue.axios({
                 baseURL: baseUrl,
                 method: 'post',
                 url: path,
@@ -62,6 +63,7 @@ function HttpClient(baseUrl) {
             }).catch(function (error) {
                 return handle.handleError(error);
             });
+            return promise;
         },
 
         setAuthorization(token) {

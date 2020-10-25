@@ -8,7 +8,7 @@
                  background-color="#6fa55c"
                  text-color="#fff"
                  active-text-color="#ffd04b"
-                 :default-openeds="['1']">
+                 :unique-opened="false">
 
             <div style="background: #168825">
                 <el-image fit="fill" :src="logoUrl"></el-image>

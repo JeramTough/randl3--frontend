@@ -47,14 +47,15 @@ const routePaths = [
                     //菜单模块
                     home_view: () => import('@/views/module/home/HomeView.vue'),
                     admin_user_view: () => import('@/views/module/system/ManageAdminView.vue'),
-                    registered_user_view: () => import('@/views/module/user/ManageUserView.vue'),
+                    randl_user_view: () => import('@/views/module/user/ManageUserView.vue'),
                     personal_info_view: () => import('@/views/module/user/ManagePersonalInfoView.vue'),
-                    interface_view: () => import('@/views/module/app/ManagerApiView.vue'),
-                    role_view: () => import('@/views/module/app/ManagerRoleView.vue'),
-                    authorization_view: () => import('@/views/module/app/AuthorizationView.vue'),
+                    api_view: () => import('@/views/module/app/ManagerApiView.vue'),
+                    role_view: () => import('@/views/module/auth/ManagerRoleView.vue'),
+                    authorization_view: () => import('@/views/module/auth/AuthorizationView.vue'),
                     module_view: () => import('@/views/module/app/ManagerModuleView.vue'),
                     operation_log_view: () => import('@/views/module/system/OperationLogView.vue'),
                     app_view: () => import('@/views/module/app/ManagerAppView.vue'),
+                    user_role_view: () => import('@/views/module/auth/ManageUserRoleMapView.vue'),
                 },
             }
         ]
