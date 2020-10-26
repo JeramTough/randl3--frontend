@@ -65,7 +65,7 @@
                     label="描述"
                     width="200">
                 <template slot-scope="scope">
-                    <el-popover trigger="hover" placement="center"
+                    <el-popover trigger="hover" placement="top"
                                 v-show="scope.row.description!=null&&scope.row.description.length>0">
                         <p> {{ scope.row.description }}</p>
                         <div slot="reference">
@@ -76,7 +76,6 @@
                         </div>
                     </el-popover>
                 </template>
-
             </el-table-column>
 
             <el-table-column
@@ -140,7 +139,7 @@
 
 <script>
     import apiHandler from "@/api/base/ApiHandler";
-    import AUdialog from "@/components/dialog/AddOrUpdateRandlUserDialog.vue";
+    import AUdialog from "@/components/dialog/AddOrUpdateAppDialog.vue";
     import jsValidate from '@/util/JsValidate';
     import dateTimeUtil from '@/util/DateTimeUtil.js';
 
@@ -165,7 +164,6 @@
                 isLoading: false,
 
                 dialogVisible: false,
-                dialogVisible2: false,
 
                 dialogTitle: "",
                 /**
@@ -221,9 +219,10 @@
             queryByCondition() {
                 let Vue = this;
 
-                //参数为空设置
+
                 this.searchParameter.index = this.currentPageIndex;
                 this.searchParameter.size = this.currentPageSize;
+                //参数为空设置
                 if (jsValidate.isEmpty(this.searchParameter.keyword)) {
                     this.searchParameter.keyword = null;
                 }
@@ -259,6 +258,7 @@
                     }
                     Vue._data.tableData = pageData.list;
 
+                    Vue.$messageUtil.success("["+data.timestamp+"]刷新数据成功^v^");
                 }
                 else {
                     Vue.$messageUtil.error(data.responseBody);
@@ -322,13 +322,21 @@
                 this.selectedEntity = null;
             }
             ,
-            onDialogDone(editedRegisteredUser) {
+            onDialogDone(editedEntity) {
                 //更新的情况下
-                // this.selectedEntity = editedRegisteredUser;
-                this.selectedEntity.enabled = editedRegisteredUser.accountStatus === 1 ? '是' : '否';
-                Object.keys(editedRegisteredUser).forEach(key => {
-                    this.selectedEntity[key] = editedRegisteredUser[key];
-                });
+                if (editedEntity.fid) {
+                    //是否是可用的
+                    this.selectedEntity.enabled = this.selectedEntity.isAble === 1;
+                    Object.keys(editedEntity).forEach(key => {
+                        this.selectedEntity[key] = editedEntity[key];
+                    });
+                }
+                else {
+                    this.obtainTableData();
+                }
+
+                this.selectedEntity.enabled = editedEntity.accountStatus === 1 ? '是' : '否';
+
             }
         },
     }

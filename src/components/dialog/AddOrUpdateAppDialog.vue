@@ -7,17 +7,25 @@
             <div class="title" style="background: #07d02c;color: #ffffff;" slot="title">{{title}}</div>
 
             <el-form :model="formData" label-position="left">
-                <el-form-item label="路径值" :label-width="formLabelWidth">
-                    <el-input v-model="formData.path" autocomplete="off"
-                              @input="onFormChanged"></el-input>
+                <el-form-item label="应用名" :label-width="formLabelWidth">
+                    <el-input v-model="formData.appName" autocomplete="off" @input="onFormChanged"></el-input>
                 </el-form-item>
-                <el-form-item label="接口别名" :label-width="formLabelWidth">
-                    <el-input v-model="formData.alias" autocomplete="off"
-                              @input="onFormChanged"></el-input>
+
+                <el-form-item v-if="isAddOption==false" label="应用代码" :label-width="formLabelWidth">
+                    <el-input v-model="formData.appCode" autocomplete="off"
+                              @input="onFormChanged" :disabled="true"></el-input>
                 </el-form-item>
-                <el-form-item label="接口描述" :label-width="formLabelWidth">
-                    <el-input v-model="formData.description" autocomplete="off"
-                              @input="onFormChanged" placeholder="可以留空"></el-input>
+
+                <el-form-item v-if="isAddOption==false" label="是否可用" :label-width="formLabelWidth">
+                    <el-switch v-model="isEnabled" @change="onFormChanged"></el-switch>
+                </el-form-item>
+
+                <el-form-item label="描述" :label-width="formLabelWidth">
+                    <el-input class="input-textarea" type="textarea" v-model="formData.description" autocomplete="off"
+                              @input="onFormChanged"
+                              :autosize="{ minRows: 4, maxRows: 8}"
+                              placeholder="请输入应用描述（255个字）"
+                              maxlength="255"></el-input>
                 </el-form-item>
             </el-form>
 
@@ -35,22 +43,25 @@
     import apiHandler from "@/api/base/ApiHandler";
 
     export default {
-        name: "AddOrUpdateApiDialog",
-        props: ['dataSource', 'visible', 'title', 'appId'],
+        name: "AddOrUpdateRandlUserDialog",
+        props: ['dataSource', 'visible', 'title'],
         components: {},
 
         mounted: function () {
+
         },
 
         data: function () {
             return {
+                passwordHint: null,
                 formLabelWidth: '120px',
+                roles: null,
                 formData: {
                     fid: null,
-                    path: null,
-                    alias: null,
+                    appName: null,
                     description: null,
-                    appId: null
+                    appCode: null,
+                    isAble: null
                 },
                 isFormChanged: false,
                 isProcessingOption: false
@@ -59,6 +70,19 @@
         computed: {
             isAddOption: function () {
                 return this.dataSource == null;
+            },
+            isEnabled: {
+                get: function () {
+                    return this.formData.isAble === 1;
+                },
+                set: function (newValue) {
+                    if (newValue) {
+                        this.formData.isAble = 1;
+                    }
+                    else {
+                        this.formData.isAble = 0;
+                    }
+                }
             }
 
         },
@@ -78,8 +102,8 @@
                     let caller = (data) => {
                         if (data.isSuccessful) {
                             Vue._data.isProcessingOption = false;
-                            Vue.$messageUtil.success(data.responseBody);
                             Vue.$emit('update:visible', false);
+                            Vue.$messageUtil.success1(data.responseBody);
                             Vue.handleDoneEvent();
                         }
                         else {
@@ -88,11 +112,11 @@
                         }
                     };
 
-                    if (!this.isAddOption) {
-                        apiHandler.getApiInfoApi().update(this.formData, caller);
+                    if (this.isAddOption) {
+                        apiHandler.getRandlAppApi().add1(this.formData).then(caller);
                     }
                     else {
-                        apiHandler.getApiInfoApi().add(this.formData, caller);
+                        apiHandler.getRandlAppApi().update(this.formData).then(caller);
                     }
 
 
@@ -101,32 +125,26 @@
             ,
             onOpened: function () {
                 this.isFormChanged = false;
-                this.refreshFormData();
-            },
-            refreshFormData() {
-                if (!this.isAddOption) {
-                    //if it's the update option’
+
+                if (this.isAddOption === false) {
                     this.formData.fid = this.dataSource.fid;
-                    this.formData.path = this.dataSource.path;
-                    this.formData.alias = this.dataSource.alias;
+                    this.formData.appName = this.dataSource.appName;
                     this.formData.description = this.dataSource.description;
-                    this.formData.appId = this.dataSource.appId;
+                    this.formData.appCode = this.dataSource.appCode;
+                    this.formData.isAble = this.dataSource.isAble;
                 }
                 else {
-                    //if it's the update option’
                     Object.keys(this.formData).forEach(key => {
                         this.formData[key] = null;
                     });
-                    this.formData.appId = this.appId;
                 }
-
             },
             handleDoneEvent() {
-                let api = {};
+                let entity = {};
                 Object.keys(this.formData).forEach(key => {
-                    api[key] = this.formData[key];
+                    entity[key] = this.formData[key];
                 });
-                this.$emit('done', api);
+                this.$emit('done', entity);
             }
             ,
             onFormChanged() {
@@ -150,5 +168,9 @@
         filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#cbeaaf', endColorstr='#cdeb8b', GradientType=0); /* IE6-9 */
 
     }
-</style>
 
+    .el-form-item .input-textarea {
+    }
+
+
+</style>
